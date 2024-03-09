@@ -1,0 +1,9 @@
+inspiration/
+bin/
+deps/
+x64/
+.vs/
+*.sln
+*.vcxproj
+*.filters
+*.user

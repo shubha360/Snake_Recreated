@@ -1,35 +1,48 @@
 #pragma once
 
-#include <Evolve/Window.h>
-#include <Evolve/ColorRgba.h>
-#include <Evolve/InputProcessor.h>
+#include <vector>
+#include <glm/glm.hpp>
 
-enum class GameState {
-	MAIN_MENU, PLAY, PAUSE, EXIT
+#include <Evolve/ShapeRenderer.h>
+
+#include "Grid.h"
+
+enum class SnakeDirection {
+	UP, RIGHT, DOWN, LEFT, NONE
+};
+
+enum class SnakePart {
+	HEAD, BODY, TAIL
 };
 
 class Snake {
 public:
+	const int BODY_SIZE = 32;
+	const int SPEED = 5;
+
 	Snake();
 	~Snake();
 
-	bool init();
-	void run();
+	bool init(Grid* grid);
+
+	void move();	
+
+	void changeDirection(const SnakeDirection newDirection);
 
 private:
-	const Evolve::ColorRgba CLEAR_COLOR { 230, 230, 230, 255 };
+	class SnakeBodyPart {
+	public:
+		SnakeBodyPart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction);
 
-	Evolve::Window m_window;
-
-	GameState m_gameState = GameState::PLAY;
-	Evolve::InputProcessor m_inputProcessor;
+		SnakePart type_;
+		glm::ivec2 position_;
+		SnakeDirection direction_;
+	};
 	
-	bool initGame();
-	bool initEngineComps();
+	Grid* grid_ = nullptr;
+	std::vector<SnakeBodyPart> snake_;
 
-	void gameLoop();
-	void processInput();
-	void draw();
+	void movePart(SnakeBodyPart& part, const glm::ivec2& newPosition);
 
-	void freeTetris();
+	void createNewSnakePart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction);
 };

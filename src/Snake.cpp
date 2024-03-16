@@ -1,73 +1,105 @@
 #include "../include/Snake.h"
 
-Snake::Snake() {}
+Snake::Snake() {	
+}
 
 Snake::~Snake() {
-	freeTetris();
 }
 
-bool Snake::init() {
-	return initEngineComps() && initGame();
-}
+bool Snake::init(Grid* grid) {
+	grid_ = grid;
 
-void Snake::run() {
-	gameLoop();
-}
+	createNewSnakePart(SnakePart::TAIL, glm::ivec2(10, 20), SnakeDirection::RIGHT);
+	createNewSnakePart(SnakePart::BODY, glm::ivec2(11, 20), SnakeDirection::RIGHT);
+	createNewSnakePart(SnakePart::HEAD, glm::ivec2(12, 20), SnakeDirection::RIGHT);
 
-bool Snake::initGame() {
 	return true;
 }
 
-bool Snake::initEngineComps() {
-	return m_window.init(false, 1720, 980, CLEAR_COLOR);
-}
+void Snake::move() {
+	
+	for (int i = snake_.size() - 1; i >= 0; i--) {
 
-void Snake::gameLoop() {
-	while (m_gameState != GameState::EXIT) {
-		processInput();
-		draw();
-	}
-}
+		auto& current = snake_[i];
 
-void Snake::processInput() {
-	SDL_Event event;
-
-	while (SDL_PollEvent(&event)) {
-
-		switch (event.type) {
-		case SDL_QUIT:
-			m_gameState = GameState::EXIT;
+		switch (current.direction_) {
+	
+		case SnakeDirection::RIGHT:
+			movePart(current, glm::ivec2(current.position_.x + 1, current.position_.y));
 			break;
 
-		case SDL_MOUSEMOTION:
-			m_inputProcessor.setMouseCoords(event.motion.x, event.motion.y);
+		case SnakeDirection::LEFT:
+			movePart(current, glm::ivec2(current.position_.x - 1, current.position_.y));
 			break;
 
-		case SDL_MOUSEBUTTONDOWN:
-			m_inputProcessor.pressKey(event.button.button);
+		case SnakeDirection::UP:
+			movePart(current, glm::ivec2(current.position_.x, current.position_.y + 1));
 			break;
 
-		case SDL_MOUSEBUTTONUP:
-			m_inputProcessor.releaseKey(event.button.button);
-			break;
-
-		case SDL_KEYDOWN:
-			m_inputProcessor.pressKey(event.key.keysym.sym);
-			break;
-
-		case SDL_KEYUP:
-			m_inputProcessor.releaseKey(event.key.keysym.sym);
+		case SnakeDirection::DOWN:
+			movePart(current, glm::ivec2(current.position_.x, current.position_.y - 1));
 			break;
 		}
 	}
 }
 
-void Snake::draw() {
-	m_window.clearScreen(GL_COLOR_BUFFER_BIT);
+void Snake::movePart(SnakeBodyPart& part, const glm::ivec2& newPosition) {
 
-	m_window.swapBuffer();
+	grid_->grid_[part.position_.y][part.position_.x] = ' ';
+	grid_->grid_[newPosition.y][newPosition.x] = 'S';
+
+	part.position_ = newPosition;
 }
 
-void Snake::freeTetris() {
-	m_window.deleteWindow();
+void Snake::changeDirection(const SnakeDirection newDirection) {
+
+	auto& head = snake_.back();
+
+	bool directionChanged = false;
+
+	switch (newDirection) {
+
+	case SnakeDirection::RIGHT:
+
+		if (head.direction_ != SnakeDirection::RIGHT && head.direction_ != SnakeDirection::LEFT) {
+			head.direction_ = SnakeDirection::RIGHT;
+		}
+		break;
+
+	case SnakeDirection::LEFT:
+
+		if (head.direction_ != SnakeDirection::RIGHT && head.direction_ != SnakeDirection::LEFT) {
+			head.direction_ = SnakeDirection::LEFT;
+		}
+		break;
+
+	case SnakeDirection::UP:
+
+		if (head.direction_ != SnakeDirection::UP && head.direction_ != SnakeDirection::DOWN) {
+			head.direction_ = SnakeDirection::UP;
+		}
+		break;
+
+	case SnakeDirection::DOWN:
+
+		if (head.direction_ != SnakeDirection::UP && head.direction_ != SnakeDirection::DOWN) {
+			head.direction_ = SnakeDirection::DOWN;
+		}
+		break;
+	}
+}
+
+Snake::SnakeBodyPart::SnakeBodyPart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction) {
+
+	type_ = type;
+	position_ = position;
+	direction_ = direction;
+
+}
+
+void Snake::createNewSnakePart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction) {
+
+	snake_.emplace_back(type, position, direction);
+
+	grid_->grid_[position.y][position.x] = 'S';
 }

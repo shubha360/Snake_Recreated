@@ -8,6 +8,7 @@
 #include <Evolve/Fps.h>
 
 #include "../include/Snake.h"
+#include "../include/Fruit.h"
 
 enum class GameState {
 	MAIN_MENU, PLAY, PAUSE, EXIT
@@ -32,9 +33,9 @@ private:
 	Evolve::Fps fps_;
 	Evolve::InputProcessor inputProcessor_;
 	Evolve::ShapeRenderer shapeRenderer_;
-	
-	Grid grid_;
+
 	Snake snake_;
+	Fruit fruit_;
 
 	bool initEngineComps();
 	bool initGame();

@@ -26,8 +26,10 @@ bool MainGame::initGame() {
 	windowWidth_ = window_.getWindowWidth();
 	windowHeight_ = window_.getWindowHeight();
 
-	return grid_.init(windowWidth_, windowHeight_) &&
-		snake_.init(&grid_);
+	snake_.init(windowWidth_, windowHeight_);
+	fruit_.init(&snake_, 0, windowWidth_, 0, windowHeight_);
+
+	return true;
 }
 
 void MainGame::gameLoop() {
@@ -42,7 +44,8 @@ void MainGame::gameLoop() {
 
 		processInput();
 
-		previousTicks = runGameSimulations(previousTicks);
+		updateSnake(0.0f);
+		//previousTicks = runGameSimulations(previousTicks);
 
 		draw();
 
@@ -83,18 +86,6 @@ float MainGame::runGameSimulations(float previousTicks) {
 
 void MainGame::updateSnake(float deltaTime) {
 
-	static const float autoMoveDelay = 15.0f;
-	static float currentDelay = 0.0f;
-
-	if (currentDelay >= autoMoveDelay) {
-		snake_.move();
-		currentDelay = 0.0f;
-	}
-	else {
-		currentDelay += deltaTime;
-	}
-
-
 	if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
 		snake_.changeDirection(SnakeDirection::RIGHT);
 	}
@@ -107,6 +98,9 @@ void MainGame::updateSnake(float deltaTime) {
 	else if (inputProcessor_.isKeyPressed(SDLK_DOWN)) {
 		snake_.changeDirection(SnakeDirection::DOWN);
 	}	
+
+	snake_.move();
+	fruit_.update();
 }
 
 void MainGame::processInput() {
@@ -147,7 +141,9 @@ void MainGame::draw() {
 
 	shapeRenderer_.begin();
 
-	grid_.printGrid(shapeRenderer_);
+	fruit_.draw(shapeRenderer_);
+
+	snake_.printSnake(shapeRenderer_);
 
 	shapeRenderer_.end();
 

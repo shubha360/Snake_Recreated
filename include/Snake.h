@@ -15,34 +15,49 @@ enum class SnakePart {
 	HEAD, BODY, TAIL
 };
 
+class SnakeBodyPart {
+public:
+	struct Rotation {
+		glm::ivec2 rotatePosition_ = glm::ivec2(0);
+		SnakeDirection rotateDirection_ = SnakeDirection::NONE;
+	};
+
+	SnakeBodyPart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction);
+
+	SnakePart type_;
+	glm::ivec2 position_;
+	SnakeDirection direction_;
+
+	std::vector<Rotation> rotations_;
+	int currentRotation_ = 0, newRotation_ = 0;
+
+	bool verticalLoopFlag_ = true, horizontalLoopFlag_ = true;
+};
+
 class Snake {
 public:
-	const int BODY_SIZE = 32;
-	const int SPEED = 5;
+	static const int BODY_SIZE;
+	static const int SPEED;
 
 	Snake();
 	~Snake();
 
-	bool init(Grid* grid);
+	bool init(const int windowWidth, const int windowHeight);
 
 	void move();	
 
 	void changeDirection(const SnakeDirection newDirection);
 
-private:
-	class SnakeBodyPart {
-	public:
-		SnakeBodyPart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction);
+	void addNewPart();
 
-		SnakePart type_;
-		glm::ivec2 position_;
-		SnakeDirection direction_;
-	};
+	void printSnake(Evolve::ShapeRenderer& renderer);
+
+	inline SnakeBodyPart getSnakeHead() const { return snake_[0]; }
 	
-	Grid* grid_ = nullptr;
+	inline std::vector<SnakeBodyPart>& getWholeSnake() { return snake_; }
+
+private:
+	
+	int windowWidth_ = 0, windowHeight_ = 0;
 	std::vector<SnakeBodyPart> snake_;
-
-	void movePart(SnakeBodyPart& part, const glm::ivec2& newPosition);
-
-	void createNewSnakePart(const SnakePart type, const glm::ivec2& position, const SnakeDirection direction);
 };

@@ -13,16 +13,16 @@ public:
 
 	const int CELL_SIZE = 32;
 
-	const char SNAKE_SIGN = 'S';
+	/*const char SNAKE_SIGN = 'S';
 	const char FRUIT_SIGN = 'F';
-	const char JACKPOT_SIGN = 'J';
+	const char JACKPOT_SIGN = 'J';*/
 
 	Grid();
 	~Grid();
 
 	bool init(const int windowWidth, const int windowHeight);
 
-	void printGrid(Evolve::ShapeRenderer& shapeRenderer);
+	/*void printGrid(Evolve::ShapeRenderer& shapeRenderer);*/
 
 private:
 	std::vector<std::string> grid_;

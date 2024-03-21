@@ -23,7 +23,8 @@ public:
 		SnakeDirection rotateDirection_ = SnakeDirection::NONE;
 	};
 
-	SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction);
+	SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction, 
+		const int numCollumns, const int numRows);
 
 	SnakePart type_;
 	
@@ -39,8 +40,6 @@ public:
 
 	std::vector<Rotation> rotations_;
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
-
-	//bool verticalLoopFlag_ = true, horizontalLoopFlag_ = true;
 };
 
 class Snake {
@@ -57,11 +56,9 @@ public:
 
 	void changeDirection(const SnakeDirection newDirection);
 
-	void addNewPart();
-
 	void draw(Evolve::ShapeRenderer& renderer);
 
-	inline SnakeBodyPart getSnakeHead() const { return snake_[0]; }
+	inline SnakeBodyPart getHead() const { return snake_[0]; }
 	
 	inline std::vector<SnakeBodyPart>& getWholeSnake() { return snake_; }
 

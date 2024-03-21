@@ -31,7 +31,7 @@ public:
 	bool isFruitCell(const int row, const int column) const;
 
 	inline int getNumRows() const { return numRows_; }
-	inline int getNumColumns() const { return numRows_; }
+	inline int getNumColumns() const { return numColumns_; }
 
 private:
 	int numRows_ = 0, numColumns_ = 0;

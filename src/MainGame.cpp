@@ -153,13 +153,13 @@ void MainGame::processInput() {
 void MainGame::draw() {
 	window_.clearScreen(GL_COLOR_BUFFER_BIT);
 
-	textureRenderer_.begin();
+	/*textureRenderer_.begin();
 
 	grid_.printGrid(textureRenderer_);
 
 	textureRenderer_.end();
 
-	textureRenderer_.renderTextures(camera_);
+	textureRenderer_.renderTextures(camera_);*/
 
 	shapeRenderer_.begin();
 

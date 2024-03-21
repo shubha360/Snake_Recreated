@@ -8,5 +8,6 @@ int main(int args, char** argv) {
 	if (game.init()) {
 		game.run();
 	}
+
 	return 0;
 }

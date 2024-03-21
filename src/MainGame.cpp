@@ -16,18 +16,19 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(false, 1720, 980, CLEAR_COLOR) &&
+		window_.init(false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
-		shapeRenderer_.init("../Evolve-Engine/engine-assets");
+		shapeRenderer_.init("../Evolve-Engine/engine-assets") && 
+		textureRenderer_.init("../Evolve-Engine/engine-assets");
 }
 
 bool MainGame::initGame() {
 	windowWidth_ = window_.getWindowWidth();
 	windowHeight_ = window_.getWindowHeight();
 
-	snake_.init(windowWidth_, windowHeight_);
-	fruit_.init(&snake_, 0, windowWidth_, 0, windowHeight_);
+	grid_.init(windowWidth_, windowHeight_);
+	snake_.init(&grid_);
 
 	return true;
 }
@@ -43,9 +44,10 @@ void MainGame::gameLoop() {
 		inputProcessor_.update();
 
 		processInput();
-
-		updateSnake(0.0f);
-		//previousTicks = runGameSimulations(previousTicks);
+		
+		if (gameState_ == GameState::PLAY) {
+			previousTicks = runGameSimulations(previousTicks);
+		}
 
 		draw();
 
@@ -72,11 +74,16 @@ float MainGame::runGameSimulations(float previousTicks) {
 	bool inputProcessed = false;
 
 	int i = 0;
+
 	while (totalDeltaTime > 0.0f && i < MAX_PHYSICS_SIMS) {
 		float deltaTime = std::min(totalDeltaTime, MAX_DELTA_TIME);
 
-		updateSnake(deltaTime);
+		updateSnake(deltaTime, inputProcessed);
 		
+		if (gameState_ == GameState::ENDED) {
+			break;
+		}
+
 		totalDeltaTime -= deltaTime;
 		i++;
 	}
@@ -84,23 +91,30 @@ float MainGame::runGameSimulations(float previousTicks) {
 	return newTicks;
 }
 
-void MainGame::updateSnake(float deltaTime) {
+void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
-	if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
-		snake_.changeDirection(SnakeDirection::RIGHT);
+	if (!inputProcessed) {
+		if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
+			snake_.changeDirection(SnakeDirection::RIGHT);
+			inputProcessed = true;
+		}
+		else if (inputProcessor_.isKeyPressed(SDLK_LEFT)) {
+			snake_.changeDirection(SnakeDirection::LEFT);
+			inputProcessed = true;
+		}
+		else if (inputProcessor_.isKeyPressed(SDLK_UP)) {
+			snake_.changeDirection(SnakeDirection::UP);
+			inputProcessed = true;
+		}
+		else if (inputProcessor_.isKeyPressed(SDLK_DOWN)) {
+			snake_.changeDirection(SnakeDirection::DOWN);
+			inputProcessed = true;
+		}
 	}
-	else if (inputProcessor_.isKeyPressed(SDLK_LEFT)) {
-		snake_.changeDirection(SnakeDirection::LEFT);
-	}
-	else if (inputProcessor_.isKeyPressed(SDLK_UP)) {
-		snake_.changeDirection(SnakeDirection::UP);
-	}
-	else if (inputProcessor_.isKeyPressed(SDLK_DOWN)) {
-		snake_.changeDirection(SnakeDirection::DOWN);
-	}	
 
-	snake_.move();
-	fruit_.update();
+	if (!snake_.move(deltaTime)) {
+		gameState_ = GameState::ENDED;
+	}
 }
 
 void MainGame::processInput() {
@@ -139,11 +153,17 @@ void MainGame::processInput() {
 void MainGame::draw() {
 	window_.clearScreen(GL_COLOR_BUFFER_BIT);
 
+	textureRenderer_.begin();
+
+	grid_.printGrid(textureRenderer_);
+
+	textureRenderer_.end();
+
+	textureRenderer_.renderTextures(camera_);
+
 	shapeRenderer_.begin();
 
-	fruit_.draw(shapeRenderer_);
-
-	snake_.printSnake(shapeRenderer_);
+	snake_.draw(shapeRenderer_);
 
 	shapeRenderer_.end();
 

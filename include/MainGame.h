@@ -9,9 +9,10 @@
 
 #include "../include/Snake.h"
 #include "../include/Fruit.h"
+#include "../include/Grid.h"
 
 enum class GameState {
-	MAIN_MENU, PLAY, PAUSE, EXIT
+	MAIN_MENU, PLAY, PAUSE, ENDED, EXIT
 };
 
 class MainGame {
@@ -23,7 +24,7 @@ public:
 	void run();
 
 private:
-	const unsigned int MAX_FPS = 60;
+	const float MAX_FPS = 60.0f;
 	const Evolve::ColorRgba CLEAR_COLOR { 230, 230, 230, 255 };
 	GameState gameState_ = GameState::PLAY;
 	unsigned int windowWidth_ = 0, windowHeight_ = 0;
@@ -33,9 +34,10 @@ private:
 	Evolve::Fps fps_;
 	Evolve::InputProcessor inputProcessor_;
 	Evolve::ShapeRenderer shapeRenderer_;
+	Evolve::TextureRenderer textureRenderer_;
 
+	Grid grid_;
 	Snake snake_;
-	Fruit fruit_;
 
 	bool initEngineComps();
 	bool initGame();
@@ -43,7 +45,7 @@ private:
 	void gameLoop();
 	float runGameSimulations(float previousTicks);
 
-	void updateSnake(float deltaTime);
+	void updateSnake(float deltaTime, bool& inputProcessed);
 
 	void processInput();
 	void draw();

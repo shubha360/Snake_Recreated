@@ -7,6 +7,7 @@
 
 #include "Grid.h"
 #include "Fruit.h"
+#include "Jackpot.h"
 
 enum class SnakeDirection {
 	UP, RIGHT, DOWN, LEFT, NONE
@@ -54,7 +55,7 @@ public:
 	Snake();
 	~Snake();
 
-	bool init(Grid* grid, Fruit* fruit);
+	bool init(Grid* grid, Fruit* fruit, Jackpot* jackpot);
 
 	bool move(float deltaTime);	
 
@@ -70,6 +71,7 @@ private:
 	
 	Grid* grid_ = nullptr;
 	Fruit* fruit_ = nullptr;
+	Jackpot* jackpot_ = nullptr;
 
 	std::vector<SnakeBodyPart> snake_;
 	

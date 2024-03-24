@@ -28,8 +28,12 @@ bool MainGame::initGame() {
 	windowHeight_ = window_.getWindowHeight();
 
 	grid_.init(windowWidth_, windowHeight_);
+	
 	fruit_.init(&grid_);
-	snake_.init(&grid_, &fruit_);
+	
+	jackpot_.init(&grid_);
+	
+	snake_.init(&grid_, &fruit_, &jackpot_);
 
 	return true;
 }
@@ -123,6 +127,17 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		if (fruit_.isConsumed()) {
 			fruit_.changePosition();
 			fruitsConsumed_++;
+
+			if (fruitsConsumed_ % 5 == 0) {
+				jackpot_.changePosition();
+				jackpot_.startTimer();
+				jackpotVisible_ = true;
+			}
+		}
+
+		if (jackpot_.isConsumed()) {
+			jackpotsConsumed_++;
+			jackpotVisible_ = false;
 		}
 	}
 }
@@ -174,6 +189,10 @@ void MainGame::draw() {
 	textureRenderer_.renderTextures(camera_);*/
 
 	shapeRenderer_.begin();
+
+	if (jackpotVisible_) {
+		jackpot_.draw(shapeRenderer_);
+	}
 
 	fruit_.draw(shapeRenderer_);
 

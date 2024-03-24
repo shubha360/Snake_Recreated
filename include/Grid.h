@@ -13,6 +13,7 @@ public:
 	const char SNAKE_SIGN = 'S';
 	const char FRUIT_SIGN = 'F';
 	const char JACKPOT_SIGN = 'J';
+	const char EMPTY_SIGN = ' ';
 
 	Grid();
 	~Grid();
@@ -23,12 +24,14 @@ public:
 
 	void addSnakeCell(const int row, const int column);
 	void addFruitCell(const int row, const int column);
+	void addJackpotCells(const int row, const int column);
 
-	void clearCell(const int row, const int column);
+	void clearCell(const int row, const int column, bool isJackpot = false);
 
 	bool isEmptyCell(const int row, const int column) const;
 	bool isSnakeCell(const int row, const int column) const;
 	bool isFruitCell(const int row, const int column) const;
+	bool isJackpotCell(const int row, const int column) const;
 
 	inline int getNumRows() const { return numRows_; }
 	inline int getNumColumns() const { return numColumns_; }

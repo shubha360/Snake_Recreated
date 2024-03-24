@@ -50,25 +50,42 @@ void Grid::printGrid(Evolve::TextureRenderer& renderer) {
 }
 
 void Grid::addSnakeCell(const int row, const int column) {
-    grid_[row][column] = 'S';
+    grid_[row][column] = SNAKE_SIGN;
 }
 
 void Grid::addFruitCell(const int row, const int column) {
-    grid_[row][column] = 'F';
+    grid_[row][column] = FRUIT_SIGN;
 }
 
-void Grid::clearCell(const int row, const int column) {
-    grid_[row][column] = ' ';
+void Grid::addJackpotCells(const int row, const int column) {
+    grid_[row][column] = JACKPOT_SIGN;
+    grid_[row][column + 1] = JACKPOT_SIGN;
+    grid_[row + 1][column] = JACKPOT_SIGN;
+    grid_[row + 1][column + 1] = JACKPOT_SIGN;
+}
+
+void Grid::clearCell(const int row, const int column, bool isJackpot /*= false*/) {
+    grid_[row][column] = EMPTY_SIGN;
+    
+    if (isJackpot) {
+        grid_[row][column + 1] = EMPTY_SIGN;
+        grid_[row + 1][column] = EMPTY_SIGN;
+        grid_[row + 1][column + 1] = EMPTY_SIGN;
+    }
 }
 
 bool Grid::isEmptyCell(const int row, const int column) const {
-    return grid_[row][column] == ' ';
+    return grid_[row][column] == EMPTY_SIGN;
 }
 
 bool Grid::isSnakeCell(const int row, const int column) const {
-    return grid_[row][column] == 'S';
+    return grid_[row][column] == SNAKE_SIGN;
 }
 
 bool Grid::isFruitCell(const int row, const int column) const {
-    return grid_[row][column] == 'F';
+    return grid_[row][column] == FRUIT_SIGN;
+}
+
+bool Grid::isJackpotCell(const int row, const int column) const {
+    return grid_[row][column] == JACKPOT_SIGN;
 }

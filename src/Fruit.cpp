@@ -11,15 +11,24 @@ bool Fruit::init(Grid * grid) {
 
 	color_.set(0, 0, 100, 255);
 
-	positionInGrid_.x = 20;
-	positionInGrid_.y = 10;
-
-	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
-
 	getRandomX_ = std::uniform_int_distribution<>(0, grid->getNumColumns() - 1);
 	getRandomY_ = std::uniform_int_distribution<>(0, grid->getNumRows() - 1);
 
-	return false;
+	changePosition();
+
+	return true;
+}
+
+void Fruit::draw(Evolve::ShapeRenderer& renderer) {
+	renderer.drawRectangle(
+		Evolve::RectDimension(
+			Evolve::Origin::BOTTOM_LEFT,
+			positionInGrid_.x * FRUIT_SIZE,
+			positionInGrid_.y * FRUIT_SIZE,
+			FRUIT_SIZE, FRUIT_SIZE
+		),
+		color_
+	);
 }
 
 void Fruit::changePosition() {
@@ -40,16 +49,4 @@ void Fruit::changePosition() {
 	positionInGrid_.y = newY;
 
 	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
-}
-
-void Fruit::draw(Evolve::ShapeRenderer& renderer) {
-	renderer.drawRectangle(
-		Evolve::RectDimension(
-			Evolve::Origin::BOTTOM_LEFT,
-			positionInGrid_.x * FRUIT_SIZE,
-			positionInGrid_.y * FRUIT_SIZE,
-			FRUIT_SIZE, FRUIT_SIZE
-		),
-		color_
-	);
 }

@@ -7,12 +7,13 @@ Snake::Snake() {}
 
 Snake::~Snake() {}
 
-bool Snake::init(Grid* grid, Fruit* fruit) {
+bool Snake::init(Grid* grid, Fruit* fruit, Jackpot* jackpot) {
 
 	snake_.reserve(currentSnakeMaxSize_);
 
 	grid_ = grid;
 	fruit_ = fruit;
+	jackpot_ = jackpot;
 
 	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
 	createNewPart(SnakePart::BODY, glm::ivec2(11, 10), SnakeDirection::RIGHT);
@@ -230,6 +231,16 @@ bool Snake::move(float deltaTime) {
 
 					fruit_->consumed();
 				} 
+				else if (grid_->isJackpotCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
+					
+					createNewPart(
+						SnakePart::NONE,
+						glm::ivec2(current.currentPositionInGrid_.x, current.currentPositionInGrid_.y),
+						SnakeDirection::NONE
+					);
+
+					jackpot_->consumed();
+				}
 				else {
 					grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
 				}

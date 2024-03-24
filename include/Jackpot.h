@@ -4,6 +4,8 @@
 
 class Jackpot : public Consumable {
 public:
+	static const int JACKPOT_SIZE;
+
 	Jackpot();
 	~Jackpot();
 
@@ -12,6 +14,8 @@ public:
 	void draw(Evolve::ShapeRenderer& renderer) override;
 
 	void changePosition() override;
+
+	void startTimer();
 
 private:
 };

@@ -7,9 +7,10 @@
 #include <Evolve/Camera.h>
 #include <Evolve/Fps.h>
 
-#include "../include/Snake.h"
-#include "../include/Fruit.h"
-#include "../include/Grid.h"
+#include "Snake.h"
+#include "Fruit.h"
+#include "Grid.h"
+#include "Jackpot.h"
 
 enum class GameState {
 	MAIN_MENU, PLAY, PAUSE, ENDED, EXIT
@@ -39,11 +40,14 @@ private:
 	Grid grid_;
 	Snake snake_;
 	Fruit fruit_;
+	Jackpot jackpot_;
 
 	int score_ = 0;
 	int fruitsConsumed_ = 0;
 	int jackpotsConsumed_ = 0;
 	int level = 1;
+
+	bool jackpotVisible_ = false;
 
 	bool initEngineComps();
 	bool initGame();

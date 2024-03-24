@@ -1,35 +1,21 @@
 #pragma once
 
-#include <Evolve/ShapeRenderer.h>
+#include "Consumable.h"
 
-#include <random>
-
-#include "Grid.h"
-
-class Fruit {
-public:	
+class Fruit : public Consumable {
+public:
 	static const int FRUIT_SIZE;
 
 	Fruit();
 	~Fruit();
 
-	bool init(Grid* grid);
+	bool init(Grid* grid) override;
 
-	void changeFruitPosition();
+	void draw(Evolve::ShapeRenderer& renderer) override;
 
-	void draw(Evolve::ShapeRenderer& renderer);
+	void changePosition() override;
 
 private:
-	Grid* grid_ = nullptr;
-
-	glm::ivec2 positionInGrid_ = glm::ivec2(0, 0);
-	Evolve::ColorRgba color_ { 0, 0, 100, 255 };
-
-	static std::random_device seed_;
-	static std::mt19937 randomEngine_;
-	
-	std::uniform_int_distribution<int> getRandomX_;
-	std::uniform_int_distribution<int> getRandomY_;
 
 	/*std::uniform_int_distribution<int> getRandomRed_;
 	std::uniform_int_distribution<int> getRandomYGreen_;*/

@@ -38,6 +38,12 @@ private:
 
 	Grid grid_;
 	Snake snake_;
+	Fruit fruit_;
+
+	int score_ = 0;
+	int fruitsConsumed_ = 0;
+	int jackpotsConsumed_ = 0;
+	int level = 1;
 
 	bool initEngineComps();
 	bool initGame();
@@ -46,11 +52,12 @@ private:
 	float runGameSimulations(float previousTicks);
 
 	void updateSnake(float deltaTime, bool& inputProcessed);
+	void updateScoreAndLevel();
 
 	void processInput();
 	void draw();
 	
 	void printFps();
 
-	void freeTetris();
+	void freeSnake();
 };

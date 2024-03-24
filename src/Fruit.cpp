@@ -2,15 +2,14 @@
 
 const int Fruit::FRUIT_SIZE = Grid::CELL_SIZE;
 
-std::random_device Fruit::seed_;
-std::mt19937 Fruit::randomEngine_(seed_());
-
 Fruit::Fruit() {}
 
 Fruit::~Fruit() {}
 
 bool Fruit::init(Grid * grid) {
 	grid_ = grid;
+
+	color_.set(0, 0, 100, 255);
 
 	positionInGrid_.x = 20;
 	positionInGrid_.y = 10;
@@ -23,8 +22,10 @@ bool Fruit::init(Grid * grid) {
 	return false;
 }
 
-void Fruit::changeFruitPosition() {
+void Fruit::changePosition() {
 	
+	consumed_ = false;
+
 	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
 
 	int newX = getRandomX_(randomEngine_);

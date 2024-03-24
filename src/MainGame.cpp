@@ -3,7 +3,7 @@
 MainGame::MainGame() {}
 
 MainGame::~MainGame() {
-	freeTetris();
+	freeSnake();
 }
 
 bool MainGame::init() {
@@ -28,7 +28,8 @@ bool MainGame::initGame() {
 	windowHeight_ = window_.getWindowHeight();
 
 	grid_.init(windowWidth_, windowHeight_);
-	snake_.init(&grid_);
+	fruit_.init(&grid_);
+	snake_.init(&grid_, &fruit_);
 
 	return true;
 }
@@ -93,6 +94,9 @@ float MainGame::runGameSimulations(float previousTicks) {
 
 void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
+	static int pointForFruit = 5;
+	static int pointForJackpot = pointForFruit * 10;
+
 	if (!inputProcessed) {
 		if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
 			snake_.changeDirection(SnakeDirection::RIGHT);
@@ -115,7 +119,15 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	if (!snake_.move(deltaTime)) {
 		gameState_ = GameState::ENDED;
 	}
+	else {
+		if (fruit_.isConsumed()) {
+			fruit_.changePosition();
+			fruitsConsumed_++;
+		}
+	}
 }
+
+void MainGame::updateScoreAndLevel() {}
 
 void MainGame::processInput() {
 	SDL_Event event;
@@ -163,6 +175,8 @@ void MainGame::draw() {
 
 	shapeRenderer_.begin();
 
+	fruit_.draw(shapeRenderer_);
+
 	snake_.draw(shapeRenderer_);
 
 	shapeRenderer_.end();
@@ -184,7 +198,7 @@ void MainGame::printFps() {
 	}
 }
 
-void MainGame::freeTetris() {
+void MainGame::freeSnake() {
 	shapeRenderer_.freeShapeRenderer();
 
 	window_.deleteWindow();

@@ -24,7 +24,7 @@ public:
 	};
 
 	SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction, 
-		const int numCollumns, const int numRows);
+		const int numRows, const int numCollumns);
 
 	SnakePart type_;
 	
@@ -36,10 +36,14 @@ public:
 	glm::ivec2 nextPositionInGrid_;
 	glm::ivec2 nextPositionInWorld_;
 
+	glm::ivec2 nextPositionInGridOffset_;
+
 	SnakeDirection direction_;
 
 	std::vector<Rotation> rotations_;
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
+
+	static bool OffsetPosition(glm::ivec2& position, int numRows, int numColumns);
 };
 
 class Snake {
@@ -50,7 +54,7 @@ public:
 	Snake();
 	~Snake();
 
-	bool init(Grid* grid);
+	bool init(Grid* grid, Fruit* fruit);
 
 	bool move(float deltaTime);	
 
@@ -65,7 +69,7 @@ public:
 private:
 	
 	Grid* grid_ = nullptr;
-	Fruit fruit_;
+	Fruit* fruit_ = nullptr;
 
 	std::vector<SnakeBodyPart> snake_;
 	

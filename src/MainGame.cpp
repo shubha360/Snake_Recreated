@@ -84,7 +84,8 @@ float MainGame::runGameSimulations(float previousTicks) {
 		float deltaTime = std::min(totalDeltaTime, MAX_DELTA_TIME);
 
 		updateSnake(deltaTime, inputProcessed);
-		
+		jackpot_.update(deltaTime);
+
 		if (gameState_ == GameState::ENDED) {
 			break;
 		}
@@ -128,7 +129,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 			fruit_.changePosition();
 			fruitsConsumed_++;
 
-			if (fruitsConsumed_ % 5 == 0) {
+			if (fruitsConsumed_ % 1 == 0) {
 				jackpot_.changePosition();
 				jackpot_.startTimer();
 				jackpotVisible_ = true;
@@ -137,6 +138,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 		if (jackpot_.isConsumed()) {
 			jackpotsConsumed_++;
+			jackpotVisible_ = false;
+		}
+		else if (jackpot_.isLost()) {
 			jackpotVisible_ = false;
 		}
 	}

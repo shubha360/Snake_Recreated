@@ -19,8 +19,11 @@ bool MainGame::initEngineComps() {
 		window_.init(false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
-		shapeRenderer_.init("../Evolve-Engine/engine-assets") && 
-		textureRenderer_.init("../Evolve-Engine/engine-assets");
+		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
+		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
+		mainFont_.initFromFontFile("Sunshine", "resources/fonts/Mr Sunshine 2.ttf", 32) &&
+		gui_.init() &&
+		guiRenderer_.init("../Evolve-Engine/engine-assets");
 }
 
 bool MainGame::initGame() {
@@ -34,6 +37,28 @@ bool MainGame::initGame() {
 	jackpot_.init(&grid_);
 	
 	snake_.init(&grid_, &fruit_, &jackpot_);
+
+	guiFont_main_ = gui_.addFont(mainFont_);
+
+	gui_scoreText_ = gui_.addPlainText(
+		"",
+		guiFont_main_,
+		1.0f,
+		Evolve::ColorRgba{ 0, 0, 0, 255 },
+		glm::ivec2(20, windowHeight_ - 10)
+		);
+
+	std::string escText = "Pres ESC to pause";
+
+	glm::ivec2 escPos { windowWidth_ - mainFont_.getLineWidth(escText) - 20, windowHeight_ - 10 };
+
+	gui_escText_ = gui_.addPlainText(
+		escText,
+		guiFont_main_,
+		1.0f,
+		Evolve::ColorRgba{ 0, 0, 0, 255 },
+		escPos
+	);
 
 	return true;
 }
@@ -50,6 +75,8 @@ void MainGame::gameLoop() {
 
 		processInput();
 		
+		gui_.updateGui(inputProcessor_, camera_);
+
 		if (gameState_ == GameState::PLAY) {
 			previousTicks = runGameSimulations(previousTicks);
 		}
@@ -85,6 +112,7 @@ float MainGame::runGameSimulations(float previousTicks) {
 
 		updateSnake(deltaTime, inputProcessed);
 		jackpot_.update(deltaTime);
+		gui_.updateTime(deltaTime);
 
 		if (gameState_ == GameState::ENDED) {
 			break;
@@ -99,8 +127,14 @@ float MainGame::runGameSimulations(float previousTicks) {
 
 void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
-	static int pointForFruit = 5;
-	static int pointForJackpot = pointForFruit * 10;
+	static int pointForFruit = 10;
+	static int pointForJackpot = 50;
+
+	static int perLevelFruitPointIncrease = 1;
+	static int perLevelJackpotPointIncrease = 10;
+
+	static int numFruitsForJackpotSpawn = 2;
+	static int numJacpotsForLevelIncrease = 3;
 
 	if (!inputProcessed) {
 		if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
@@ -126,22 +160,34 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	}
 	else {
 		if (fruit_.isConsumed()) {
+
+			score_ += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
+
 			fruit_.changePosition();
 			fruitsConsumed_++;
 
-			if (fruitsConsumed_ % 1 == 0) {
-				jackpot_.changePosition();
-				jackpot_.startTimer();
+			if (fruitsConsumed_ % numFruitsForJackpotSpawn == 0) {
+				jackpot_.startJackpot();
 				jackpotVisible_ = true;
 			}
 		}
 
 		if (jackpot_.isConsumed()) {
+			score_ += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
+
+			jackpot_.changePosition();
+
 			jackpotsConsumed_++;
 			jackpotVisible_ = false;
+
+			if (jackpotsConsumed_ % numJacpotsForLevelIncrease == 0) {
+				level_++;
+			}
 		}
 		else if (jackpot_.isLost()) {
 			jackpotVisible_ = false;
+
+			jackpot_.changePosition();
 		}
 	}
 }
@@ -179,6 +225,15 @@ void MainGame::processInput() {
 			break;
 		}
 	}
+
+	if (inputProcessor_.isKeyPressed(SDLK_ESCAPE)) {
+		if (gameState_ == GameState::PLAY) {
+			gameState_ = GameState::PAUSE;
+		}
+		else if (gameState_ == GameState::PAUSE) {
+			gameState_ = GameState::PLAY;
+		}
+	}
 }
 
 void MainGame::draw() {
@@ -205,6 +260,13 @@ void MainGame::draw() {
 	shapeRenderer_.end();
 
 	shapeRenderer_.renderShapes(camera_);
+
+	std::string scoreText = "Level: " + std::to_string(level_) + " (MAX 10)\n" +
+		"Score: " + std::to_string(score_);
+
+	gui_.setComponentLabel(gui_scoreText_, scoreText);
+
+	guiRenderer_.renderGui(gui_, camera_);
 
 	window_.swapBuffer();
 }

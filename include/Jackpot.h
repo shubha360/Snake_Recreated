@@ -15,7 +15,7 @@ public:
 
 	void changePosition() override;
 
-	void startTimer();
+	void startJackpot();
 
 	void update(float deltaTime);
 
@@ -27,6 +27,7 @@ private:
 	const float maxTime_ = 300.0f;
 	
 	float currentTime_ = 0.0f;
+	bool timerRunning_ = false;
 	
 	int windowWidth_ = 0, windowHeight_ = 0;
 };

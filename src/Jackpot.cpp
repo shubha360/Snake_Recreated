@@ -11,13 +11,10 @@ bool Jackpot::init(Grid* grid) {
 
 	color_.set(100, 0, 0, 255);
 
-	getRandomX_ = std::uniform_int_distribution<>(0, grid->getNumColumns() - 2);
-	getRandomY_ = std::uniform_int_distribution<>(2, grid->getNumRows() - 2);
-
 	windowWidth_ = grid_->getNumColumns() * Grid::CELL_SIZE;
 	windowHeight_ = grid_->getNumRows() * Grid::CELL_SIZE;
-
-	reset();
+	
+	availablePositions_.resize((size_t) (grid_->getNumRows() - 1) * (grid_->getNumColumns() - 1));
 
 	return true;
 }
@@ -63,24 +60,26 @@ void Jackpot::startJackpot() {
 	currentTime_ = 0.0f;
 	timerRunning_ = true;
 
-	int newX = getRandomX_(randomEngine_);
-	int newY = getRandomY_(randomEngine_);
+	for (size_t row = 0; row < grid_->getNumRows() - 1; row++) {
+		for (size_t column = 0; column < grid_->getNumColumns() - 1; column++) {
+			
+			if (grid_->isEmptyCell(row, column) &&
+				grid_->isEmptyCell(row, column + 1) &&
+				grid_->isEmptyCell(row + 1, column) &&
+				grid_->isEmptyCell(row + 1, column + 1)) {
 
-	while (true) {
-		if (grid_->isEmptyCell(newY, newX) &&
-			grid_->isEmptyCell(newY, newX + 1) &&
-			grid_->isEmptyCell(newY + 1, newX) &&
-			grid_->isEmptyCell(newY + 1, newX + 1)) {
-
-			break;
+				availablePositions_[availablePositionIndex_].x = column;
+				availablePositions_[availablePositionIndex_].y = row;
+				availablePositionIndex_++;
+			}
 		}
-
-		newX = getRandomX_(randomEngine_);
-		newY = getRandomY_(randomEngine_);
 	}
 
-	positionInGrid_.x = newX;
-	positionInGrid_.y = newY;
+	getRandom_ = std::uniform_int_distribution<int>(0, availablePositionIndex_ - 1);
+
+	positionInGrid_ = availablePositions_[getRandom_(randomEngine_)];
+
+	availablePositionIndex_ = 0;
 
 	grid_->addJackpotCells(positionInGrid_.y, positionInGrid_.x);
 }

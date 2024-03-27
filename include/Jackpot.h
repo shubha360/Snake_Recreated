@@ -30,4 +30,11 @@ private:
 	bool timerRunning_ = false;
 	
 	int windowWidth_ = 0, windowHeight_ = 0;
+
+	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
+
+	std::vector<glm::ivec2> availablePositions_;
+	int availablePositionIndex_ = 0;
+
+	std::uniform_int_distribution<int> getRandom_;
 };

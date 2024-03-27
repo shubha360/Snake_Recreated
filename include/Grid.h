@@ -22,22 +22,22 @@ public:
 
 	void printGrid(Evolve::TextureRenderer& renderer);
 
-	void addSnakeCell(const int row, const int column);
-	void addFruitCell(const int row, const int column);
-	void addJackpotCells(const int row, const int column);
+	void addSnakeCell(const size_t row, const size_t column);
+	void addFruitCell(const size_t row, const size_t column);
+	void addJackpotCells(const size_t row, const size_t column);
 
-	void clearCell(const int row, const int column, bool isJackpot = false);
+	void clearCell(const size_t row, const size_t column, bool isJackpot = false);
 
-	bool isEmptyCell(const int row, const int column) const;
-	bool isSnakeCell(const int row, const int column) const;
-	bool isFruitCell(const int row, const int column) const;
-	bool isJackpotCell(const int row, const int column) const;
+	bool isEmptyCell(const size_t row, const size_t column) const;
+	bool isSnakeCell(const size_t row, const size_t column) const;
+	bool isFruitCell(const size_t row, const size_t column) const;
+	bool isJackpotCell(const size_t row, const size_t column) const;
 
-	inline int getNumRows() const { return numRows_; }
-	inline int getNumColumns() const { return numColumns_; }
+	inline size_t getNumRows() const { return numRows_; }
+	inline size_t getNumColumns() const { return numColumns_; }
 
 private:
-	int numRows_ = 0, numColumns_ = 0;
+	size_t numRows_ = 0, numColumns_ = 0;
 	std::vector<std::string> grid_;
 
 	Evolve::TextureData cellTexture_;

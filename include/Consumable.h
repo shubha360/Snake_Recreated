@@ -8,9 +8,6 @@
 
 class Consumable {
 public:
-	/*Consumable();
-	virtual ~Consumable();*/
-
 	virtual bool init(Grid* grid) = 0;
 
 	virtual void draw(Evolve::ShapeRenderer& renderer) = 0;
@@ -30,8 +27,5 @@ protected:
 
 	static std::random_device seed_;
 	static std::mt19937 randomEngine_;
-
-	std::uniform_int_distribution<int> getRandomX_;
-	std::uniform_int_distribution<int> getRandomY_;
 };
 

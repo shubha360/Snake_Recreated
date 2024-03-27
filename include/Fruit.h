@@ -17,6 +17,11 @@ public:
 
 private:
 
+	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
+
+	std::uniform_int_distribution<size_t> getRandomX_;
+	std::uniform_int_distribution<size_t> getRandomY_;
+
 	/*std::uniform_int_distribution<int> getRandomRed_;
 	std::uniform_int_distribution<int> getRandomYGreen_;*/
 };

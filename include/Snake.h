@@ -29,6 +29,8 @@ public:
 
 	SnakePart type_;
 	
+	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
+
 	glm::ivec2 previousPositionInGrid_ {};
 
 	glm::ivec2 currentPositionInGrid_;

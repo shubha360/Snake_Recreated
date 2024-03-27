@@ -11,8 +11,8 @@ bool Fruit::init(Grid * grid) {
 
 	color_.set(0, 0, 100, 255);
 
-	getRandomX_ = std::uniform_int_distribution<>(0, grid->getNumColumns() - 1);
-	getRandomY_ = std::uniform_int_distribution<>(0, grid->getNumRows() - 1);
+	getRandomX_ = std::uniform_int_distribution<size_t>(0, grid->getNumColumns() - 1);
+	getRandomY_ = std::uniform_int_distribution<size_t>(0, grid->getNumRows() - 1);
 
 	reset();
 
@@ -37,8 +37,8 @@ void Fruit::reset() {
 
 	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
 
-	int newX = getRandomX_(randomEngine_);
-	int newY = getRandomY_(randomEngine_);
+	size_t newX = getRandomX_(randomEngine_);
+	size_t newY = getRandomY_(randomEngine_);
 
 	while (!grid_->isEmptyCell(newY, newX)) {
 		newX = getRandomX_(randomEngine_);

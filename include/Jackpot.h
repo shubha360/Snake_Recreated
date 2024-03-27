@@ -15,21 +15,25 @@ public:
 
 	void reset() override;
 
-	void startJackpot();
+	void startJackpot(int level);
 
 	void update(float deltaTime);
 
 	inline bool isLost() const { return lost_; }
 
+	inline float getMaxTime() const { return maxTime_; }
+
 private:
 	bool lost_ = false;
 
-	const float maxTime_ = 300.0f;
+	float maxTime_ = 300.0f;
 	
 	float currentTime_ = 0.0f;
 	bool timerRunning_ = false;
 	
 	int windowWidth_ = 0, windowHeight_ = 0;
+
+	int currentLevel_ = 1;
 
 	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
 

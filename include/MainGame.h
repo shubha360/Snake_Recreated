@@ -59,7 +59,7 @@ private:
 	int score_ = 0;
 	int fruitsConsumed_ = 0;
 	int jackpotsConsumed_ = 0;
-	int level_ = 1;
+	int level_ = 0;
 
 	bool jackpotVisible_ = false;
 

@@ -14,7 +14,10 @@ bool Fruit::init(Grid * grid) {
 	getRandomX_ = std::uniform_int_distribution<size_t>(0, grid->getNumColumns() - 1);
 	getRandomY_ = std::uniform_int_distribution<size_t>(0, grid->getNumRows() - 1);
 
-	reset();
+	positionInGrid_.x = 25;
+	positionInGrid_.y = 10;
+
+	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
 
 	return true;
 }

@@ -56,7 +56,13 @@ void Jackpot::reset() {
 	grid_->clearCell(positionInGrid_.y, positionInGrid_.x, true);
 }
 
-void Jackpot::startJackpot() {
+void Jackpot::startJackpot(int level) {	
+
+	if (level > currentLevel_) {
+		currentLevel_ = level;
+		maxTime_ -= 20.0f;
+	}
+
 	currentTime_ = 0.0f;
 	timerRunning_ = true;
 

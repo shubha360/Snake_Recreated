@@ -34,7 +34,7 @@ private:
 	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
 
 	std::vector<glm::ivec2> availablePositions_;
-	int availablePositionIndex_ = 0;
+	size_t availablePositionIndex_ = 0;
 
 	std::uniform_int_distribution<int> getRandom_;
 };

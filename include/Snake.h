@@ -25,7 +25,7 @@ public:
 	};
 
 	SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction, 
-		const int numRows, const int numCollumns);
+		const size_t numRows, const size_t numCollumns);
 
 	SnakePart type_;
 	
@@ -46,7 +46,7 @@ public:
 	std::vector<Rotation> rotations_;
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
 
-	static bool OffsetPosition(glm::ivec2& position, int numRows, int numColumns);
+	static bool OffsetPosition(glm::ivec2& position, size_t numRows, size_t numColumns);
 };
 
 class Snake {

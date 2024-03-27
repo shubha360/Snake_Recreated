@@ -22,7 +22,7 @@ bool Snake::init(Grid* grid, Fruit* fruit, Jackpot* jackpot) {
 	return true;
 }
 
-bool Snake::move(float deltaTime) {
+bool Snake::move(float deltaTime, int level) {
 
 	for (int i = 0; i < snake_.size(); i++) {
 
@@ -33,7 +33,7 @@ bool Snake::move(float deltaTime) {
 		switch (current.direction_) {
 
 		case SnakeDirection::RIGHT:
-			current.currentPositionInWorld_.x += (int) (SPEED * deltaTime);
+			current.currentPositionInWorld_.x += (int)((SPEED + level - 1) * deltaTime);
 
 			if (current.currentPositionInWorld_.x >= current.nextPositionInWorld_.x) {
 				
@@ -58,7 +58,7 @@ bool Snake::move(float deltaTime) {
 			break;
 
 		case SnakeDirection::LEFT:
-			current.currentPositionInWorld_.x -= (int) (SPEED * deltaTime);
+			current.currentPositionInWorld_.x -= (int) ((SPEED + level - 1) * deltaTime);
 
 			if (current.currentPositionInWorld_.x <= current.nextPositionInWorld_.x) {
 				
@@ -82,7 +82,7 @@ bool Snake::move(float deltaTime) {
 			break;
 
 		case SnakeDirection::UP:
-			current.currentPositionInWorld_.y += (int) (SPEED * deltaTime);
+			current.currentPositionInWorld_.y += (int) ((SPEED + level - 1) * deltaTime);
 
 			if (current.currentPositionInWorld_.y >= current.nextPositionInWorld_.y) {
 				
@@ -105,7 +105,7 @@ bool Snake::move(float deltaTime) {
 			break;
 
 		case SnakeDirection::DOWN:
-			current.currentPositionInWorld_.y -= (int) (SPEED * deltaTime);
+			current.currentPositionInWorld_.y -= (int) ((SPEED + level - 1) * deltaTime);
 
 			if (current.currentPositionInWorld_.y <= current.nextPositionInWorld_.y) {
 				

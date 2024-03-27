@@ -17,7 +17,7 @@ bool Jackpot::init(Grid* grid) {
 	windowWidth_ = grid_->getNumColumns() * Grid::CELL_SIZE;
 	windowHeight_ = grid_->getNumRows() * Grid::CELL_SIZE;
 
-	changePosition();
+	reset();
 
 	return true;
 }
@@ -50,13 +50,18 @@ void Jackpot::draw(Evolve::ShapeRenderer& renderer) {
 	);
 }
 
-void Jackpot::changePosition() {
-	
+void Jackpot::reset() {
+
 	consumed_ = false;
 	lost_ = false;
 	timerRunning_ = false;
 
 	grid_->clearCell(positionInGrid_.y, positionInGrid_.x, true);
+}
+
+void Jackpot::startJackpot() {
+	currentTime_ = 0.0f;
+	timerRunning_ = true;
 
 	int newX = getRandomX_(randomEngine_);
 	int newY = getRandomY_(randomEngine_);
@@ -69,18 +74,13 @@ void Jackpot::changePosition() {
 
 			break;
 		}
-		
+
 		newX = getRandomX_(randomEngine_);
 		newY = getRandomY_(randomEngine_);
 	}
 
 	positionInGrid_.x = newX;
 	positionInGrid_.y = newY;
-}
-
-void Jackpot::startJackpot() {
-	currentTime_ = 0.0f;
-	timerRunning_ = true;
 
 	grid_->addJackpotCells(positionInGrid_.y, positionInGrid_.x);
 }

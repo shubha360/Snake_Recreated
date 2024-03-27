@@ -155,7 +155,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		}
 	}
 
-	if (!snake_.move(deltaTime)) {
+	if (!snake_.move(deltaTime, level_)) {
 		gameState_ = GameState::ENDED;
 	}
 	else {
@@ -163,7 +163,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 			score_ += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
 
-			fruit_.changePosition();
+			fruit_.reset();
 			fruitsConsumed_++;
 
 			if (fruitsConsumed_ % numFruitsForJackpotSpawn == 0) {
@@ -175,7 +175,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		if (jackpot_.isConsumed()) {
 			score_ += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
 
-			jackpot_.changePosition();
+			jackpot_.reset();
 
 			jackpotsConsumed_++;
 			jackpotVisible_ = false;
@@ -187,7 +187,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		else if (jackpot_.isLost()) {
 			jackpotVisible_ = false;
 
-			jackpot_.changePosition();
+			jackpot_.reset();
 		}
 	}
 }

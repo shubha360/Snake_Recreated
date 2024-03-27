@@ -14,7 +14,7 @@ bool Fruit::init(Grid * grid) {
 	getRandomX_ = std::uniform_int_distribution<>(0, grid->getNumColumns() - 1);
 	getRandomY_ = std::uniform_int_distribution<>(0, grid->getNumRows() - 1);
 
-	changePosition();
+	reset();
 
 	return true;
 }
@@ -31,7 +31,7 @@ void Fruit::draw(Evolve::ShapeRenderer& renderer) {
 	);
 }
 
-void Fruit::changePosition() {
+void Fruit::reset() {
 	
 	consumed_ = false;
 

@@ -13,7 +13,7 @@ public:
 
 	void draw(Evolve::ShapeRenderer& renderer) override;
 
-	void changePosition() override;
+	void reset() override;
 
 	void startJackpot();
 

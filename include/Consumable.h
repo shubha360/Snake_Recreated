@@ -15,7 +15,7 @@ public:
 
 	virtual void draw(Evolve::ShapeRenderer& renderer) = 0;
 
-	virtual void changePosition() = 0;
+	virtual void reset() = 0;
 
 	inline void consumed() { consumed_ = true; }
 	inline bool isConsumed() const { return consumed_; }

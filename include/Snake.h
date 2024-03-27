@@ -57,7 +57,7 @@ public:
 
 	bool init(Grid* grid, Fruit* fruit, Jackpot* jackpot);
 
-	bool move(float deltaTime);	
+	bool move(float deltaTime, int level);
 
 	void changeDirection(const SnakeDirection newDirection);
 

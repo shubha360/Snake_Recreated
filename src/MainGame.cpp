@@ -133,8 +133,11 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static int perLevelFruitPointIncrease = 1;
 	static int perLevelJackpotPointIncrease = 10;
 
-	static int numFruitsForJackpotSpawn = 2;
-	static int numJacpotsForLevelIncrease = 1;
+	static int numFruitsForJackpotSpawn = 10;
+
+	static int nextLevelUp = 250;
+	static int levelUpIncreasePerLevel = 50;
+	static int currentLevelScore = 0;
 
 	if (!inputProcessed) {
 		if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
@@ -162,6 +165,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		if (fruit_.isConsumed()) {
 
 			score_ += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
+			currentLevelScore += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
 
 			fruit_.reset();
 			fruitsConsumed_++;
@@ -174,20 +178,24 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 		if (jackpot_.isConsumed()) {
 			score_ += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
+			currentLevelScore += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
 
 			jackpot_.reset();
 
 			jackpotsConsumed_++;
 			jackpotVisible_ = false;
-
-			if (jackpotsConsumed_ % numJacpotsForLevelIncrease == 0) {
-				level_++;
-			}
 		}
 		else if (jackpot_.isLost()) {
 			jackpotVisible_ = false;
 
 			jackpot_.reset();
+		}
+
+		// level up
+		if (currentLevelScore >= nextLevelUp) {
+			level_++;
+			currentLevelScore = 0;
+			nextLevelUp += levelUpIncreasePerLevel;
 		}
 	}
 }
@@ -262,7 +270,7 @@ void MainGame::draw() {
 	shapeRenderer_.renderShapes(camera_);
 
 	std::string scoreText = "Level: " + std::to_string(level_) + " (MAX 10)\n" +
-		"Score: " + std::to_string(score_) + "\nJ Time: " + std::to_string(jackpot_.getMaxTime());
+		"Score: " + std::to_string(score_);
 
 	gui_.setComponentLabel(gui_scoreText_, scoreText);
 

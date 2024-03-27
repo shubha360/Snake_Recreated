@@ -21,8 +21,6 @@ public:
 
 	inline bool isLost() const { return lost_; }
 
-	inline float getMaxTime() const { return maxTime_; }
-
 private:
 	bool lost_ = false;
 

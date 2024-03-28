@@ -31,7 +31,7 @@ public:
 private:
 	const float MAX_FPS = 60.0f;
 	const Evolve::ColorRgba CLEAR_COLOR { 230, 230, 230, 255 };
-	GameState gameState_ = GameState::PLAY;
+	GameState gameState_ = GameState::MAIN_MENU;
 	unsigned int windowWidth_ = 0, windowHeight_ = 0;
 
 	Evolve::Window window_;

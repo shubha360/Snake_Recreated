@@ -47,6 +47,9 @@ bool MainGame::initGame() {
 	Evolve::ColorRgba blackColor { 0, 0, 0, 255 };
 	Evolve::ColorRgba whiteColor { 230, 230, 230, 255 };
 
+	int buttonWidth = 300;
+	int buttonHeight = 64;
+
 	gui_scoreText_ = gui_.addPlainText(
 		"",
 		guiFont_vinique32_,
@@ -54,6 +57,8 @@ bool MainGame::initGame() {
 		blackColor,
 		glm::ivec2(20, windowHeight_ - 10)
 		);
+
+	gui_.hideComponent(gui_scoreText_);
 
 	std::string escText = "ESC to pause";
 
@@ -67,6 +72,8 @@ bool MainGame::initGame() {
 		escPos
 	);
 
+	gui_.hideComponent(gui_escText_);
+
 	gui_bgPanel_ = gui_.addPanel(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
@@ -75,7 +82,42 @@ bool MainGame::initGame() {
 		Evolve::ColorRgba{ 230, 230, 230, 200 }
 	);
 
-	gui_.hideComponent(gui_bgPanel_);
+	// start menu
+
+	std::string snakeText = "SNAKE";
+
+	glm::ivec2 snakePos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(snakeText) / 2, windowHeight_ / 5 * 4 };
+
+	gui_snakeText_ = gui_.addPlainText(
+		snakeText,
+		guiFont_vinique128_,
+		1.0f,
+		blackColor,
+		snakePos
+	);
+
+	Evolve::RectDimension startButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, snakePos.y - 350, buttonWidth, buttonHeight);
+
+	gui_startButton_ = gui_.addTextButton(
+		"Start",
+		guiFont_vinique32_,
+		1.0f,
+		whiteColor,
+		blackColor,
+		startButtonDims,
+		[&]() {
+			gui_.hideComponent(gui_snakeText_);
+			gui_.hideComponent(gui_startButton_);
+			gui_.hideComponent(gui_bgPanel_);
+
+			gui_.showComponent(gui_scoreText_);
+			gui_.showComponent(gui_escText_);
+
+			gameState_ = GameState::PLAY;
+		}
+	);
+
+	// pause menu
 
 	std::string pauseText = "PAUSED";
 	std::string resumeText = "Press ESC again to resume playing";
@@ -103,9 +145,6 @@ bool MainGame::initGame() {
 	);
 
 	gui_.hideComponent(gui_resumeText_);
-
-	int buttonWidth = 300;
-	int buttonHeight = 64;
 
 	Evolve::RectDimension restartButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, pauseTextPos.y - 350, buttonWidth, buttonHeight);
 

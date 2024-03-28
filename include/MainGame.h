@@ -17,7 +17,7 @@
 #include "Jackpot.h"
 
 enum class GameState {
-	MAIN_MENU, PLAY, PAUSE, ENDED, EXIT
+	MAIN_MENU, PLAY, PAUSE, ENDED, QUIT
 };
 
 class MainGame {
@@ -42,14 +42,29 @@ private:
 	Evolve::TextureRenderer textureRenderer_;
 	Evolve::Gui gui_;
 	Evolve::GuiRenderer guiRenderer_;
-	Evolve::Font mainFont_;
+	Evolve::Font viniqueFont32_;
+	Evolve::Font viniqueFont128_;
+	Evolve::Font viniqueFont16_;
 
 	// gui font ids
-	size_t guiFont_main_ = -1;
+	size_t guiFont_vinique32_ = -1;
+	size_t guiFont_vinique128_ = -1;
+	size_t guiFont_vinique16_ = -1;
 
 	// gui component ids
 	size_t gui_scoreText_ = -1;
 	size_t gui_escText_ = -1;
+	size_t gui_levelUpText_ = -1;
+
+	size_t gui_bgPanel_ = -1;
+
+	size_t gui_snakeText_ = -1;
+	size_t gui_startButton_ = -1;
+
+	size_t gui_pauseText_ = -1;
+	size_t gui_resumeText_ = -1;
+	size_t gui_restartButton_ = -1;
+	size_t gui_quitButton_ = -1;
 
 	Grid grid_;
 	Snake snake_;
@@ -58,8 +73,11 @@ private:
 
 	int score_ = 0;
 	int fruitsConsumed_ = 0;
-	int jackpotsConsumed_ = 0;
 	int level_ = 1;
+
+	const int SCORE_FIRST_LEVEL_UP = 250;
+	int scoreToLevelUp_ = SCORE_FIRST_LEVEL_UP;
+	int currentLevelScore_ = 0;
 
 	bool jackpotVisible_ = false;
 
@@ -70,7 +88,10 @@ private:
 	float runGameSimulations(float previousTicks);
 
 	void updateSnake(float deltaTime, bool& inputProcessed);
-	void updateScoreAndLevel();
+
+	void pause();
+	void resume();
+	void restart();
 
 	void processInput();
 	void draw();

@@ -22,6 +22,16 @@ bool Fruit::init(Grid * grid) {
 	return true;
 }
 
+void Fruit::restart() {
+	consumed_ = false;
+	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
+
+	positionInGrid_.x = 25;
+	positionInGrid_.y = 10;
+
+	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
+}
+
 void Fruit::draw(Evolve::ShapeRenderer& renderer) {
 	renderer.drawRectangle(
 		Evolve::RectDimension(
@@ -43,9 +53,13 @@ void Fruit::reset() {
 	size_t newX = getRandomX_(randomEngine_);
 	size_t newY = getRandomY_(randomEngine_);
 
-	while (!grid_->isEmptyCell(newY, newX)) {
+	while (true) {
 		newX = getRandomX_(randomEngine_);
 		newY = getRandomY_(randomEngine_);
+
+		if (grid_->isEmptyCell(newY, newX)) {
+			break;
+		}
 	}
 
 	positionInGrid_.x = newX;

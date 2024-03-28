@@ -21,7 +21,9 @@ bool MainGame::initEngineComps() {
 		fps_.init(MAX_FPS) &&
 		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
 		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
-		mainFont_.initFromFontFile("Sunshine", "resources/fonts/Mr Sunshine 2.ttf", 32) &&
+		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
+		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&
+		viniqueFont16_.initFromFontFile("Sunshine 16", "resources/fonts/vinque.rg-regular.otf", 20) &&
 		gui_.init() &&
 		guiRenderer_.init("../Evolve-Engine/engine-assets");
 }
@@ -38,27 +40,100 @@ bool MainGame::initGame() {
 	
 	snake_.init(&grid_, &fruit_, &jackpot_);
 
-	guiFont_main_ = gui_.addFont(mainFont_);
+	guiFont_vinique32_ = gui_.addFont(viniqueFont32_);
+	guiFont_vinique128_ = gui_.addFont(viniqueFont128_);
+	guiFont_vinique16_ = gui_.addFont(viniqueFont16_);
+
+	Evolve::ColorRgba blackColor { 0, 0, 0, 255 };
+	Evolve::ColorRgba whiteColor { 230, 230, 230, 255 };
 
 	gui_scoreText_ = gui_.addPlainText(
 		"",
-		guiFont_main_,
+		guiFont_vinique32_,
 		1.0f,
-		Evolve::ColorRgba{ 0, 0, 0, 255 },
+		blackColor,
 		glm::ivec2(20, windowHeight_ - 10)
 		);
 
-	std::string escText = "Pres ESC to pause";
+	std::string escText = "ESC to pause";
 
-	glm::ivec2 escPos { windowWidth_ - mainFont_.getLineWidth(escText) - 20, windowHeight_ - 10 };
+	glm::ivec2 escPos { windowWidth_ - viniqueFont32_.getLineWidth(escText) - 20, windowHeight_ - 10 };
 
 	gui_escText_ = gui_.addPlainText(
 		escText,
-		guiFont_main_,
+		guiFont_vinique32_,
 		1.0f,
-		Evolve::ColorRgba{ 0, 0, 0, 255 },
+		blackColor,
 		escPos
 	);
+
+	gui_bgPanel_ = gui_.addPanel(
+		Evolve::RectDimension(
+			Evolve::Origin::BOTTOM_LEFT,
+			0, 0, windowWidth_, windowHeight_
+		),
+		Evolve::ColorRgba{ 230, 230, 230, 200 }
+	);
+
+	gui_.hideComponent(gui_bgPanel_);
+
+	std::string pauseText = "PAUSED";
+	std::string resumeText = "Press ESC again to resume playing";
+
+	glm::ivec2 pauseTextPos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(pauseText) / 2,  windowHeight_ / 5 * 4 };
+
+	gui_pauseText_ = gui_.addPlainText(
+		pauseText,
+		guiFont_vinique128_,
+		1.0f,
+		blackColor,
+		pauseTextPos
+		);
+
+	gui_.hideComponent(gui_pauseText_);
+
+	glm::ivec2 resumeTextPos { windowWidth_ / 2 - viniqueFont16_.getLineWidth(resumeText) / 2,  pauseTextPos.y - 180 };
+
+	gui_resumeText_ = gui_.addPlainText(
+		resumeText,
+		guiFont_vinique16_,
+		1.0f,
+		blackColor,
+		resumeTextPos
+	);
+
+	gui_.hideComponent(gui_resumeText_);
+
+	int buttonWidth = 300;
+	int buttonHeight = 64;
+
+	Evolve::RectDimension restartButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, pauseTextPos.y - 350, buttonWidth, buttonHeight);
+
+	gui_restartButton_ = gui_.addTextButton(
+		"Restart",
+		guiFont_vinique32_,
+		1.0f,
+		whiteColor,
+		blackColor,
+		restartButtonDims,
+		[&]() { restart(); }
+	);
+
+	gui_.hideComponent(gui_restartButton_);
+
+	Evolve::RectDimension quitButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, restartButtonDims.getBottom() - 50, buttonWidth, buttonHeight);
+
+	gui_quitButton_ = gui_.addTextButton(
+		"Quit",
+		guiFont_vinique32_,
+		1.0f,
+		whiteColor,
+		blackColor,
+		quitButtonDims,
+		[&]() { gameState_ = GameState::QUIT; }
+	);
+
+	gui_.hideComponent(gui_quitButton_);
 
 	return true;
 }
@@ -67,7 +142,7 @@ void MainGame::gameLoop() {
 
 	float previousTicks = (float) SDL_GetTicks();
 
-	while (gameState_ != GameState::EXIT) {
+	while (gameState_ != GameState::QUIT) {
 
 		fps_.beginFrame();
 
@@ -127,17 +202,16 @@ float MainGame::runGameSimulations(float previousTicks) {
 
 void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
-	static int pointForFruit = 10;
-	static int pointForJackpot = 50;
+	static const int POINT_FRUIT = 10;
+	static const int POINT_JACKPOT = 50;
 
-	static int perLevelFruitPointIncrease = 1;
-	static int perLevelJackpotPointIncrease = 10;
+	static const int ADD_FRUIT_POINT_PER_LEVEL = 1;
+	static const int ADD_JACKPOT_POINT_PER_LEVEL = 10;
 
-	static int numFruitsForJackpotSpawn = 10;
+	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 10;
 
-	static int nextLevelUp = 250;
-	static int levelUpIncreasePerLevel = 50;
-	static int currentLevelScore = 0;
+	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 50;
+	
 
 	if (!inputProcessed) {
 		if (inputProcessor_.isKeyPressed(SDLK_RIGHT)) {
@@ -164,25 +238,25 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	else {
 		if (fruit_.isConsumed()) {
 
-			score_ += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
-			currentLevelScore += pointForFruit + (perLevelFruitPointIncrease * (level_ - 1));
+			score_ += POINT_FRUIT + (ADD_FRUIT_POINT_PER_LEVEL * (level_ - 1));
+			currentLevelScore_ += POINT_FRUIT + (ADD_FRUIT_POINT_PER_LEVEL * (level_ - 1));
 
 			fruit_.reset();
 			fruitsConsumed_++;
 
-			if (fruitsConsumed_ % numFruitsForJackpotSpawn == 0) {
+			if (fruitsConsumed_ % NUM_FRUIT_FOR_JACKPOT_SPAWN == 0) {
+				jackpot_.reset();
 				jackpot_.startJackpot(level_);
 				jackpotVisible_ = true;
 			}
 		}
 
 		if (jackpot_.isConsumed()) {
-			score_ += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
-			currentLevelScore += pointForJackpot + (perLevelJackpotPointIncrease * (level_ - 1));
+			score_ += POINT_JACKPOT + (ADD_JACKPOT_POINT_PER_LEVEL * (level_ - 1));
+			currentLevelScore_ += POINT_JACKPOT + (ADD_JACKPOT_POINT_PER_LEVEL * (level_ - 1));
 
 			jackpot_.reset();
 
-			jackpotsConsumed_++;
 			jackpotVisible_ = false;
 		}
 		else if (jackpot_.isLost()) {
@@ -192,15 +266,55 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		}
 
 		// level up
-		if (currentLevelScore >= nextLevelUp) {
+		if (currentLevelScore_ >= scoreToLevelUp_) {
 			level_++;
-			currentLevelScore = 0;
-			nextLevelUp += levelUpIncreasePerLevel;
+			currentLevelScore_ = 0;
+			scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;
 		}
 	}
 }
 
-void MainGame::updateScoreAndLevel() {}
+void MainGame::pause() {
+	gameState_ = GameState::PAUSE;
+
+	gui_.showComponent(gui_bgPanel_);
+	gui_.showComponent(gui_pauseText_);
+	gui_.showComponent(gui_resumeText_);
+	gui_.showComponent(gui_restartButton_);
+	gui_.showComponent(gui_quitButton_);
+
+	gui_.hideComponent(gui_escText_);
+}
+
+void MainGame::resume() {
+	gameState_ = GameState::PLAY;
+
+	gui_.hideComponent(gui_bgPanel_);
+	gui_.hideComponent(gui_pauseText_);
+	gui_.hideComponent(gui_resumeText_);
+	gui_.hideComponent(gui_restartButton_);
+	gui_.hideComponent(gui_quitButton_);
+
+	gui_.showComponent(gui_escText_);
+}
+
+void MainGame::restart() {
+	score_ = 0;
+	fruitsConsumed_ = 0;
+	level_ = 1;
+
+	scoreToLevelUp_ = SCORE_FIRST_LEVEL_UP;
+	currentLevelScore_ = 0;
+
+	jackpotVisible_ = false;
+
+	snake_.restart();
+	fruit_.restart();
+	jackpot_.restart();
+
+	resume();
+}
+
 
 void MainGame::processInput() {
 	SDL_Event event;
@@ -209,7 +323,7 @@ void MainGame::processInput() {
 
 		switch (event.type) {
 		case SDL_QUIT:
-			gameState_ = GameState::EXIT;
+			gameState_ = GameState::QUIT;
 			break;
 
 		case SDL_MOUSEMOTION:
@@ -236,10 +350,10 @@ void MainGame::processInput() {
 
 	if (inputProcessor_.isKeyPressed(SDLK_ESCAPE)) {
 		if (gameState_ == GameState::PLAY) {
-			gameState_ = GameState::PAUSE;
+			pause();
 		}
 		else if (gameState_ == GameState::PAUSE) {
-			gameState_ = GameState::PLAY;
+			resume();
 		}
 	}
 }
@@ -269,7 +383,7 @@ void MainGame::draw() {
 
 	shapeRenderer_.renderShapes(camera_);
 
-	std::string scoreText = "Level: " + std::to_string(level_) + " (MAX 10)\n" +
+	std::string scoreText = "Level: " + std::to_string(level_) + "\n" +
 		"Score: " + std::to_string(score_);
 
 	gui_.setComponentLabel(gui_scoreText_, scoreText);

@@ -11,6 +11,8 @@ public:
 
 	bool init(Grid* grid) override;
 
+	void restart() override;
+
 	void draw(Evolve::ShapeRenderer& renderer) override;
 
 	void reset() override;
@@ -23,6 +25,7 @@ public:
 
 private:
 	bool lost_ = false;
+	bool haveToReset_ = false;
 
 	float maxTime_ = 300.0f;
 	

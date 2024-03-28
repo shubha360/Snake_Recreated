@@ -22,6 +22,23 @@ bool Snake::init(Grid* grid, Fruit* fruit, Jackpot* jackpot) {
 	return true;
 }
 
+void Snake::restart() {
+
+	for (auto& part : snake_) {
+		grid_->clearCell(part.currentPositionInGrid_.y, part.currentPositionInGrid_.x);
+	}
+
+	snake_.clear();
+
+	currentSnakeMaxSize_ = startingSnakeReserveSize_;
+	currentPartIndex_ = 0;
+	snake_.reserve(currentSnakeMaxSize_);
+
+	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
+	createNewPart(SnakePart::BODY, glm::ivec2(11, 10), SnakeDirection::RIGHT);
+	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
+}
+
 bool Snake::move(float deltaTime, int level) {
 
 	for (int i = 0; i < snake_.size(); i++) {

@@ -59,6 +59,8 @@ public:
 
 	bool init(Grid* grid, Fruit* fruit, Jackpot* jackpot);
 
+	void restart();
+
 	bool move(float deltaTime, int level);
 
 	void changeDirection(const SnakeDirection newDirection);
@@ -77,7 +79,8 @@ private:
 
 	std::vector<SnakeBodyPart> snake_;
 	
-	size_t currentSnakeMaxSize_ = 128;
+	const size_t startingSnakeReserveSize_ = 128;
+	size_t currentSnakeMaxSize_ = startingSnakeReserveSize_;
 	size_t currentPartIndex_ = 0;
 
 	void createNewPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction);

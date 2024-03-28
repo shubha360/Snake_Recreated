@@ -14,7 +14,7 @@ bool Grid::init(const int windowWidth, const int windowHeight) {
     grid_.resize(numRows_);
 
     for (auto& str : grid_) {
-        str = std::string(numColumns_, ' ');
+        str = std::string(numColumns_, EMPTY_SIGN);
     }
 
     Evolve::ImageLoader::LoadTextureFromImage("resources/images/cell.png", cellTexture_, 4);

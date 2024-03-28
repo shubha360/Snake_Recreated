@@ -10,6 +10,8 @@ class Consumable {
 public:
 	virtual bool init(Grid* grid) = 0;
 
+	virtual void restart() = 0;
+
 	virtual void draw(Evolve::ShapeRenderer& renderer) = 0;
 
 	virtual void reset() = 0;

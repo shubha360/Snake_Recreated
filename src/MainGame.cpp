@@ -205,9 +205,6 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static const int POINT_FRUIT = 10;
 	static const int POINT_JACKPOT = 50;
 
-	static const int ADD_FRUIT_POINT_PER_LEVEL = 1;
-	static const int ADD_JACKPOT_POINT_PER_LEVEL = 10;
-
 	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 10;
 
 	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 50;
@@ -232,14 +229,19 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		}
 	}
 
-	if (!snake_.move(deltaTime, level_)) {
+	int nextMove = snake_.move(deltaTime, level_);
+
+	if (nextMove == -1) {
 		gameState_ = GameState::ENDED;
 	}
 	else {
+		score_ += nextMove;
+		currentLevelScore_ += nextMove;
+
 		if (fruit_.isConsumed()) {
 
-			score_ += POINT_FRUIT + (ADD_FRUIT_POINT_PER_LEVEL * (level_ - 1));
-			currentLevelScore_ += POINT_FRUIT + (ADD_FRUIT_POINT_PER_LEVEL * (level_ - 1));
+			score_ += POINT_FRUIT;
+			currentLevelScore_ += POINT_FRUIT;
 
 			fruit_.reset();
 			fruitsConsumed_++;
@@ -252,8 +254,8 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		}
 
 		if (jackpot_.isConsumed()) {
-			score_ += POINT_JACKPOT + (ADD_JACKPOT_POINT_PER_LEVEL * (level_ - 1));
-			currentLevelScore_ += POINT_JACKPOT + (ADD_JACKPOT_POINT_PER_LEVEL * (level_ - 1));
+			score_ += POINT_JACKPOT;
+			currentLevelScore_ += POINT_JACKPOT;
 
 			jackpot_.reset();
 

@@ -61,7 +61,9 @@ public:
 
 	void restart();
 
-	bool move(float deltaTime, int level);
+	// returns the point for rotations and loops,
+	// returns -1 on death
+	int move(float deltaTime, int level);
 
 	void changeDirection(const SnakeDirection newDirection);
 
@@ -73,6 +75,9 @@ public:
 
 private:
 	
+	const int POINT_ROTAION = 1;
+	const int POINT_LOOP = 2;
+
 	Grid* grid_ = nullptr;
 	Fruit* fruit_ = nullptr;
 	Jackpot* jackpot_ = nullptr;

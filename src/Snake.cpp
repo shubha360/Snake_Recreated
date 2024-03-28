@@ -39,7 +39,9 @@ void Snake::restart() {
 	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
 }
 
-bool Snake::move(float deltaTime, int level) {
+int Snake::move(float deltaTime, int level) {
+
+	int movementPoints = 0;
 
 	for (int i = 0; i < snake_.size(); i++) {
 
@@ -65,6 +67,10 @@ bool Snake::move(float deltaTime, int level) {
 				if (SnakeBodyPart::OffsetPosition(current.currentPositionInGrid_,
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
+					if (current.type_ == SnakePart::HEAD) {
+						movementPoints += POINT_LOOP;
+					}
+
 					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
 				}
 				
@@ -88,6 +94,10 @@ bool Snake::move(float deltaTime, int level) {
 
 				if (SnakeBodyPart::OffsetPosition(current.currentPositionInGrid_,
 					grid_->getNumRows(), grid_->getNumColumns())) {
+
+					if (current.type_ == SnakePart::HEAD) {
+						movementPoints += POINT_LOOP;
+					}
 
 					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
 				}
@@ -113,6 +123,10 @@ bool Snake::move(float deltaTime, int level) {
 				if (SnakeBodyPart::OffsetPosition(current.currentPositionInGrid_,
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
+					if (current.type_ == SnakePart::HEAD) {
+						movementPoints += POINT_LOOP;
+					}
+
 					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
 				}
 
@@ -135,6 +149,10 @@ bool Snake::move(float deltaTime, int level) {
 
 				if (SnakeBodyPart::OffsetPosition(current.currentPositionInGrid_,
 					grid_->getNumRows(), grid_->getNumColumns())) {
+
+					if (current.type_ == SnakePart::HEAD) {
+						movementPoints += POINT_LOOP;
+					}
 
 					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
 				}
@@ -220,6 +238,10 @@ bool Snake::move(float deltaTime, int level) {
 				SnakeBodyPart::OffsetPosition(current.nextPositionInGridOffset_,
 					grid_->getNumRows(), grid_->getNumColumns());
 
+				if (current.type_ == SnakePart::HEAD) {
+					movementPoints += POINT_ROTAION;
+				}
+
 				if (current.type_ != SnakePart::TAIL) {
 					auto& next = snake_[(size_t) i + 1];
 						
@@ -233,11 +255,12 @@ bool Snake::move(float deltaTime, int level) {
 
 			if (current.type_ == SnakePart::HEAD) {
 				
-				// ATE FRUIT
+				// ate itself
 				if (grid_->isSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
-					std::cout << "DIE!!!!!\n\n\n";
-					return false;
+					return -1;
 				}
+				
+				// ate fruit
 				else if (grid_->isFruitCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
 
 					createNewPart(
@@ -248,6 +271,8 @@ bool Snake::move(float deltaTime, int level) {
 
 					fruit_->consumed();
 				} 
+				
+				// ate jackpot
 				else if (grid_->isJackpotCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
 					
 					createNewPart(
@@ -262,12 +287,9 @@ bool Snake::move(float deltaTime, int level) {
 					grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
 				}
 			}
-
-
 		}
 	}
-
-	return true;
+	return movementPoints;
 }
 
 void Snake::changeDirection(const SnakeDirection newDirection) {

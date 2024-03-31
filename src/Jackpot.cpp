@@ -9,7 +9,7 @@ Jackpot::~Jackpot() {}
 bool Jackpot::init(Grid* grid) {
 	grid_ = grid;
 
-	color_.set(100, 0, 0, 255);
+	color_.set(255, 154, 114, 255);
 
 	windowWidth_ = (int) grid_->getNumColumns() * Grid::CELL_SIZE;
 	windowHeight_ = (int) grid_->getNumRows() * Grid::CELL_SIZE;

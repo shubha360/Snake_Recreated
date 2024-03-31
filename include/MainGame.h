@@ -30,7 +30,7 @@ public:
 
 private:
 	const float MAX_FPS = 60.0f;
-	const Evolve::ColorRgba CLEAR_COLOR { 230, 230, 230, 255 };
+	const Evolve::ColorRgba CLEAR_COLOR { 221, 255, 242, 255 };
 	GameState gameState_ = GameState::MAIN_MENU;
 	unsigned int windowWidth_ = 0, windowHeight_ = 0;
 
@@ -52,19 +52,27 @@ private:
 	size_t guiFont_vinique16_ = -1;
 
 	// gui component ids
-	size_t gui_scoreText_ = -1;
-	size_t gui_escText_ = -1;
-	size_t gui_levelUpText_ = -1;
-
 	size_t gui_bgPanel_ = -1;
 
 	size_t gui_snakeText_ = -1;
 	size_t gui_startButton_ = -1;
 
-	size_t gui_pauseText_ = -1;
-	size_t gui_resumeText_ = -1;
+	size_t gui_scoreText_ = -1;
 	size_t gui_restartButton_ = -1;
 	size_t gui_quitButton_ = -1;
+
+	size_t gui_pauseText_ = -1;
+
+	size_t gui_levelUpText_ = -1;
+	glm::ivec2 levelUpTextPos_ {};
+
+	size_t gui_gameOverText_ = -1;
+	glm::ivec2 gameOverTextPos_ {};
+
+	int gameOverEndingY_ = 0, gameOverStartingY_ = 0;
+	bool gameOverUpdateNeeded_ = false;
+
+	void updateGameOverText(float deltaTime);
 
 	Grid grid_;
 	Snake snake_;
@@ -83,6 +91,7 @@ private:
 
 	bool initEngineComps();
 	bool initGame();
+	void initGuiComponents();
 
 	void gameLoop();
 	float runGameSimulations(float previousTicks);

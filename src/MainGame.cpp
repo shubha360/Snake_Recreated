@@ -16,7 +16,7 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(false, 1720, 960, CLEAR_COLOR) &&
+		window_.init(true, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
 		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
@@ -40,70 +40,95 @@ bool MainGame::initGame() {
 	
 	snake_.init(&grid_, &fruit_, &jackpot_);
 
+	initGuiComponents();
+
+	return true;
+}
+
+void MainGame::initGuiComponents() {
 	guiFont_vinique32_ = gui_.addFont(viniqueFont32_);
 	guiFont_vinique128_ = gui_.addFont(viniqueFont128_);
 	guiFont_vinique16_ = gui_.addFont(viniqueFont16_);
 
-	Evolve::ColorRgba blackColor { 0, 0, 0, 255 };
-	Evolve::ColorRgba whiteColor { 230, 230, 230, 255 };
+	Evolve::ColorRgba greyColor { 50, 50, 50, 255 };
+	Evolve::ColorRgba bgColor { CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 255 };
+	Evolve::ColorRgba transparentColor { 0, 0, 0, 0 };
 
-	int buttonWidth = 300;
-	int buttonHeight = 64;
-
+	// score and level
 	gui_scoreText_ = gui_.addPlainText(
 		"",
 		guiFont_vinique32_,
 		1.0f,
-		blackColor,
+		greyColor,
 		glm::ivec2(20, windowHeight_ - 10)
-		);
+	);
 
 	gui_.hideComponent(gui_scoreText_);
 
-	std::string escText = "ESC to pause";
+	// restart and quit buttons
+	std::string restartText = "Restart";
+	std::string quitText = "Quit";
 
-	glm::ivec2 escPos { windowWidth_ - viniqueFont32_.getLineWidth(escText) - 20, windowHeight_ - 10 };
+	Evolve::RectDimension quitButtonDims(Evolve::Origin::TOP_RIGHT,
+		windowWidth_ - 20, windowHeight_ - 10,
+		viniqueFont32_.getLineWidth(quitText), viniqueFont32_.getLineHeight());
 
-	gui_escText_ = gui_.addPlainText(
-		escText,
+	gui_quitButton_ = gui_.addTextButton(
+		quitText,
 		guiFont_vinique32_,
 		1.0f,
-		blackColor,
-		escPos
+		greyColor,
+		transparentColor,
+		quitButtonDims,
+		[&]() { gameState_ = GameState::QUIT; }
 	);
 
-	gui_.hideComponent(gui_escText_);
+	Evolve::RectDimension restartButtonDims(Evolve::Origin::TOP_RIGHT,
+		quitButtonDims.getLeft() - 20, quitButtonDims.getTop(),
+		viniqueFont32_.getLineWidth(restartText), viniqueFont32_.getLineHeight());
 
+	gui_restartButton_ = gui_.addTextButton(
+		restartText,
+		guiFont_vinique32_,
+		1.0f,
+		greyColor,
+		transparentColor,
+		restartButtonDims,
+		[&]() { restart(); }
+	);
+
+	gui_.hideComponent(gui_restartButton_);
+
+	// background panel
 	gui_bgPanel_ = gui_.addPanel(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
 			0, 0, windowWidth_, windowHeight_
 		),
-		Evolve::ColorRgba{ 230, 230, 230, 200 }
+		Evolve::ColorRgba{ CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 200 }
 	);
 
 	// start menu
-
 	std::string snakeText = "SNAKE";
 
-	glm::ivec2 snakePos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(snakeText) / 2, windowHeight_ / 5 * 4 };
+	glm::ivec2 snakePos{ windowWidth_ / 2 - viniqueFont128_.getLineWidth(snakeText) / 2, windowHeight_ / 5 * 4 };
 
 	gui_snakeText_ = gui_.addPlainText(
 		snakeText,
 		guiFont_vinique128_,
 		1.0f,
-		blackColor,
+		greyColor,
 		snakePos
 	);
 
-	Evolve::RectDimension startButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, snakePos.y - 350, buttonWidth, buttonHeight);
+	Evolve::RectDimension startButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, snakePos.y - 350, 300, 64);
 
 	gui_startButton_ = gui_.addTextButton(
 		"Start",
 		guiFont_vinique32_,
 		1.0f,
-		whiteColor,
-		blackColor,
+		bgColor,
+		greyColor,
 		startButtonDims,
 		[&]() {
 			gui_.hideComponent(gui_snakeText_);
@@ -111,70 +136,46 @@ bool MainGame::initGame() {
 			gui_.hideComponent(gui_bgPanel_);
 
 			gui_.showComponent(gui_scoreText_);
-			gui_.showComponent(gui_escText_);
+			gui_.showComponent(gui_quitButton_);
+			gui_.showComponent(gui_restartButton_);
 
 			gameState_ = GameState::PLAY;
 		}
 	);
 
-	// pause menu
-
+	// pause
 	std::string pauseText = "PAUSED";
-	std::string resumeText = "Press ESC again to resume playing";
 
-	glm::ivec2 pauseTextPos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(pauseText) / 2,  windowHeight_ / 5 * 4 };
+	glm::ivec2 pauseTextPos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(pauseText) / 2, windowHeight_ / 4 * 3 };
 
-	gui_pauseText_ = gui_.addPlainText(
+	gui_pauseText_ = gui_.addBlinkingText(
 		pauseText,
 		guiFont_vinique128_,
 		1.0f,
-		blackColor,
+		greyColor,
 		pauseTextPos
-		);
+	);
 
 	gui_.hideComponent(gui_pauseText_);
 
-	glm::ivec2 resumeTextPos { windowWidth_ / 2 - viniqueFont16_.getLineWidth(resumeText) / 2,  pauseTextPos.y - 180 };
+	// game over
+	std::string gameOverText = "Game over!";
 
-	gui_resumeText_ = gui_.addPlainText(
-		resumeText,
-		guiFont_vinique16_,
-		1.0f,
-		blackColor,
-		resumeTextPos
-	);
+	gameOverStartingY_ = windowHeight_ + viniqueFont32_.getLineHeight();
+	gameOverEndingY_ = windowHeight_ - 10;
 
-	gui_.hideComponent(gui_resumeText_);
+	gameOverTextPos_.x = windowWidth_ / 2 - viniqueFont32_.getLineWidth(gameOverText) / 2;
+	gameOverTextPos_.y = gameOverStartingY_;
 
-	Evolve::RectDimension restartButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, pauseTextPos.y - 350, buttonWidth, buttonHeight);
-
-	gui_restartButton_ = gui_.addTextButton(
-		"Restart",
+	gui_gameOverText_ = gui_.addPlainText(
+		gameOverText,
 		guiFont_vinique32_,
 		1.0f,
-		whiteColor,
-		blackColor,
-		restartButtonDims,
-		[&]() { restart(); }
+		greyColor,
+		gameOverTextPos_
 	);
 
-	gui_.hideComponent(gui_restartButton_);
-
-	Evolve::RectDimension quitButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, restartButtonDims.getBottom() - 50, buttonWidth, buttonHeight);
-
-	gui_quitButton_ = gui_.addTextButton(
-		"Quit",
-		guiFont_vinique32_,
-		1.0f,
-		whiteColor,
-		blackColor,
-		quitButtonDims,
-		[&]() { gameState_ = GameState::QUIT; }
-	);
-
-	gui_.hideComponent(gui_quitButton_);
-
-	return true;
+	gui_.hideComponent(gui_gameOverText_);
 }
 
 void MainGame::gameLoop() {
@@ -191,9 +192,7 @@ void MainGame::gameLoop() {
 		
 		gui_.updateGui(inputProcessor_, camera_);
 
-		if (gameState_ == GameState::PLAY) {
-			previousTicks = runGameSimulations(previousTicks);
-		}
+		previousTicks = runGameSimulations(previousTicks);
 
 		draw();
 
@@ -224,8 +223,15 @@ float MainGame::runGameSimulations(float previousTicks) {
 	while (totalDeltaTime > 0.0f && i < MAX_PHYSICS_SIMS) {
 		float deltaTime = std::min(totalDeltaTime, MAX_DELTA_TIME);
 
-		updateSnake(deltaTime, inputProcessed);
-		jackpot_.update(deltaTime);
+		if (gameState_ == GameState::PLAY) {
+			updateSnake(deltaTime, inputProcessed);
+			jackpot_.update(deltaTime);
+		}
+		
+		if (gameOverUpdateNeeded_) {
+			updateGameOverText(deltaTime);
+		}
+		
 		gui_.updateTime(deltaTime);
 
 		if (gameState_ == GameState::ENDED) {
@@ -272,6 +278,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 	if (nextMove == -1) {
 		gameState_ = GameState::ENDED;
+		gameOverUpdateNeeded_ = true;
 	}
 	else {
 		score_ += nextMove;
@@ -315,28 +322,43 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	}
 }
 
+void MainGame::updateGameOverText(float deltaTime) {
+	
+	if (gameState_ == GameState::ENDED) {
+		if (!gui_.isComponentVisible(gui_gameOverText_)) {
+			gui_.showComponent(gui_gameOverText_);
+		}
+
+		if (gameOverTextPos_.y > gameOverEndingY_) {
+			gameOverTextPos_.y -= 2 * deltaTime;
+			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
+		}
+		else {
+			gameOverUpdateNeeded_ = false;
+		}
+	}
+	else {
+		if (gameOverTextPos_.y < gameOverStartingY_) {
+			gameOverTextPos_.y += 2 * deltaTime;
+			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
+		}
+		else {
+			gui_.hideComponent(gui_gameOverText_);
+			gameOverUpdateNeeded_ = false;
+		}
+	}
+}
+
 void MainGame::pause() {
 	gameState_ = GameState::PAUSE;
 
-	gui_.showComponent(gui_bgPanel_);
 	gui_.showComponent(gui_pauseText_);
-	gui_.showComponent(gui_resumeText_);
-	gui_.showComponent(gui_restartButton_);
-	gui_.showComponent(gui_quitButton_);
-
-	gui_.hideComponent(gui_escText_);
 }
 
 void MainGame::resume() {
 	gameState_ = GameState::PLAY;
 
-	gui_.hideComponent(gui_bgPanel_);
 	gui_.hideComponent(gui_pauseText_);
-	gui_.hideComponent(gui_resumeText_);
-	gui_.hideComponent(gui_restartButton_);
-	gui_.hideComponent(gui_quitButton_);
-
-	gui_.showComponent(gui_escText_);
 }
 
 void MainGame::restart() {
@@ -352,6 +374,10 @@ void MainGame::restart() {
 	snake_.restart();
 	fruit_.restart();
 	jackpot_.restart();
+
+	if (gameState_ == GameState::ENDED) {
+		gameOverUpdateNeeded_ = true;
+	}
 
 	resume();
 }

@@ -9,7 +9,7 @@ Fruit::~Fruit() {}
 bool Fruit::init(Grid * grid) {
 	grid_ = grid;
 
-	color_.set(0, 0, 100, 255);
+	color_.set(65, 130, 211, 255);
 
 	getRandomX_ = std::uniform_int_distribution<size_t>(0, grid->getNumColumns() - 1);
 	getRandomY_ = std::uniform_int_distribution<size_t>(0, grid->getNumRows() - 1);

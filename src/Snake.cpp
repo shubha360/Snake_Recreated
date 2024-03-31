@@ -25,8 +25,13 @@ bool Snake::init(Grid* grid, Fruit* fruit, Jackpot* jackpot) {
 void Snake::restart() {
 
 	for (auto& part : snake_) {
+		
 		grid_->clearCell(part.currentPositionInGrid_.y, part.currentPositionInGrid_.x);
 	}
+	
+	// the body parts don't move once the snake eats itself
+	// that's why no body part covers this cell but it remains occupied in the grid
+	grid_->clearCell(snake_[0].previousPositionInGrid_.y, snake_[0].previousPositionInGrid_.x);
 
 	snake_.clear();
 
@@ -255,9 +260,11 @@ int Snake::move(float deltaTime, int level) {
 
 			if (current.type_ == SnakePart::HEAD) {
 				
+				bool ateSelf = false;
+
 				// ate itself
 				if (grid_->isSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
-					return -1;
+					ateSelf = true;
 				}
 				
 				// ate fruit
@@ -283,8 +290,11 @@ int Snake::move(float deltaTime, int level) {
 
 					jackpot_->consumed();
 				}
-				else {
-					grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
+
+				grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
+
+				if (ateSelf) {
+					return -1;
 				}
 			}
 		}
@@ -330,9 +340,9 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 
 void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	
-	static Evolve::ColorRgba HEAD_COLOR{ 0, 200, 0, 255 };
-	static Evolve::ColorRgba BODY_COLOR{ 0, 0, 200, 255 };
-	static Evolve::ColorRgba TAIL_COLOR{ 200, 0, 0, 255 };
+	static Evolve::ColorRgba HEAD_COLOR {  88, 185, 142, 255 };
+	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 255 };
+	static Evolve::ColorRgba TAIL_COLOR { 105, 210, 164, 255 };
 
 	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
 

@@ -34,11 +34,11 @@ bool MainGame::initGame() {
 
 	grid_.init(windowWidth_, windowHeight_);
 	
-	fruit_.init(&grid_);
+	food_.init(&grid_);
 	
 	jackpot_.init(&grid_);
 	
-	snake_.init(&grid_, &fruit_, &jackpot_);
+	snake_.init(&grid_, &food_, &jackpot_);
 
 	initGuiComponents();
 
@@ -271,7 +271,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static const int POINT_FRUIT = 10;
 	static const int POINT_JACKPOT = 50;
 
-	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 10;
+	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 2;
 
 	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 50;
 	
@@ -305,12 +305,12 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		score_ += nextMove;
 		currentLevelScore_ += nextMove;
 
-		if (fruit_.isConsumed()) {
+		if (food_.isConsumed()) {
 
 			score_ += POINT_FRUIT;
 			currentLevelScore_ += POINT_FRUIT;
 
-			fruit_.reset();
+			food_.reset();
 			fruitsConsumed_++;
 
 			if (fruitsConsumed_ % NUM_FRUIT_FOR_JACKPOT_SPAWN == 0) {
@@ -361,7 +361,7 @@ void MainGame::updatelevelUpText(float deltaTime) {
 				}
 
 				if (levelUpTextPos_.y > movintTextEndingY_) {
-					levelUpTextPos_.y -= 2 * deltaTime;
+					levelUpTextPos_.y -= (int) (2.0f * deltaTime);
 					gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
 				}
 				else {
@@ -385,7 +385,7 @@ void MainGame::updatelevelUpText(float deltaTime) {
 		}
 		else {
 			if (levelUpTextPos_.y < movingTextStartingY_) {
-				levelUpTextPos_.y += 2 * deltaTime;
+				levelUpTextPos_.y += (int) (2.0f * deltaTime);
 				gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
 			}
 			else {
@@ -411,7 +411,7 @@ void MainGame::updateGameOverText(float deltaTime) {
 		}
 
 		if (gameOverTextPos_.y > movintTextEndingY_) {
-			gameOverTextPos_.y -= 2 * deltaTime;
+			gameOverTextPos_.y -= (int) (2.0f * deltaTime);
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}
 		else {
@@ -420,7 +420,7 @@ void MainGame::updateGameOverText(float deltaTime) {
 	}
 	else {
 		if (gameOverTextPos_.y < movingTextStartingY_) {
-			gameOverTextPos_.y += 2 * deltaTime;
+			gameOverTextPos_.y += (int) (2.0f * deltaTime);
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}
 		else {
@@ -453,7 +453,7 @@ void MainGame::restart() {
 	jackpotVisible_ = false;
 
 	snake_.restart();
-	fruit_.restart();
+	food_.restart();
 	jackpot_.restart();
 
 	if (gameState_ == GameState::ENDED) {
@@ -509,23 +509,25 @@ void MainGame::processInput() {
 void MainGame::draw() {
 	window_.clearScreen(GL_COLOR_BUFFER_BIT);
 
-	/*textureRenderer_.begin();
+	textureRenderer_.begin();
 
-	grid_.printGrid(textureRenderer_);
+	food_.draw(textureRenderer_);
+
+	if (jackpotVisible_) {
+		jackpot_.draw(textureRenderer_);
+	}
 
 	textureRenderer_.end();
 
-	textureRenderer_.renderTextures(camera_);*/
+	textureRenderer_.renderTextures(camera_);
 
 	shapeRenderer_.begin();
 
-	if (jackpotVisible_) {
-		jackpot_.draw(shapeRenderer_);
-	}
-
-	fruit_.draw(shapeRenderer_);
-
 	snake_.draw(shapeRenderer_);
+
+	if (jackpotVisible_) {
+		jackpot_.drawTimer(shapeRenderer_);
+	}
 
 	shapeRenderer_.end();
 

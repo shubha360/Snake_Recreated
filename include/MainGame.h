@@ -12,7 +12,7 @@
 #include <Evolve/GuiRenderer.h>
 
 #include "Snake.h"
-#include "Fruit.h"
+#include "Food.h"
 #include "Grid.h"
 #include "Jackpot.h"
 
@@ -82,7 +82,7 @@ private:
 
 	Grid grid_;
 	Snake snake_;
-	Fruit fruit_;
+	Food food_;
 	Jackpot jackpot_;
 
 	int score_ = 0;

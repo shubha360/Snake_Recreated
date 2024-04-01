@@ -12,7 +12,7 @@ public:
 
 	virtual void restart() = 0;
 
-	virtual void draw(Evolve::ShapeRenderer& renderer) = 0;
+	virtual void draw(Evolve::TextureRenderer& renderer) const = 0;
 
 	virtual void reset() = 0;
 
@@ -25,9 +25,10 @@ protected:
 	bool consumed_ = false;
 
 	glm::ivec2 positionInGrid_ = glm::ivec2(0, 0);
-	Evolve::ColorRgba color_ = {};
 
 	static std::random_device seed_;
 	static std::mt19937 randomEngine_;
+
+	void loadTexture(const std::string& path, Evolve::TextureData& texture);
 };
 

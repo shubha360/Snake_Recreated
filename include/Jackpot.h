@@ -13,7 +13,9 @@ public:
 
 	void restart() override;
 
-	void draw(Evolve::ShapeRenderer& renderer) override;
+	void draw(Evolve::TextureRenderer& renderer) const override;
+
+	void drawTimer(Evolve::ShapeRenderer& renderer) const;
 
 	void reset() override;
 
@@ -41,5 +43,10 @@ private:
 	std::vector<glm::ivec2> availablePositions_;
 	size_t availablePositionIndex_ = 0;
 
-	std::uniform_int_distribution<int> getRandom_;
+	std::uniform_int_distribution<int> getRandomPosition_;
+	std::uniform_int_distribution<int> getRandomJackpot_;
+
+	Evolve::TextureData jackpotTextures_[5];
+	Evolve::ColorRgba timerColors_[5];
+	int currentJackpot_ = 0;
 };

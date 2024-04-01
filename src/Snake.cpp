@@ -7,12 +7,12 @@ Snake::Snake() {}
 
 Snake::~Snake() {}
 
-bool Snake::init(Grid* grid, Fruit* fruit, Jackpot* jackpot) {
+bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
 	snake_.reserve(currentSnakeMaxSize_);
 
 	grid_ = grid;
-	fruit_ = fruit;
+	food_ = food;
 	jackpot_ = jackpot;
 
 	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
@@ -276,7 +276,7 @@ int Snake::move(float deltaTime, int level) {
 						SnakeDirection::NONE
 					);
 
-					fruit_->consumed();
+					food_->consumed();
 				} 
 				
 				// ate jackpot

@@ -9,12 +9,28 @@ Jackpot::~Jackpot() {}
 bool Jackpot::init(Grid* grid) {
 	grid_ = grid;
 
-	color_.set(255, 154, 114, 255);
-
 	windowWidth_ = (int) grid_->getNumColumns() * Grid::CELL_SIZE;
 	windowHeight_ = (int) grid_->getNumRows() * Grid::CELL_SIZE;
 	
 	availablePositions_.resize((size_t)((grid_->getNumRows() - 3) - 2) * (grid_->getNumColumns() - 1));
+
+	getRandomJackpot_ = std::uniform_int_distribution<int>(0, 4);
+
+	{ // initializing jackpot textures and colors
+		int index = 0;
+
+		loadTexture("resources/images/jackpots/diamond.png",	jackpotTextures_[index++]);
+		loadTexture("resources/images/jackpots/earth.png",		jackpotTextures_[index++]);
+		loadTexture("resources/images/jackpots/fireworks.png",	jackpotTextures_[index++]);
+		loadTexture("resources/images/jackpots/rock.png",		jackpotTextures_[index++]);
+		loadTexture("resources/images/jackpots/star.png",		jackpotTextures_[index++]);
+
+		timerColors_[0].set ( 255,  57, 151, 255 );
+		timerColors_[1].set (   0, 140, 223, 255 );
+		timerColors_[2].set ( 142,  81, 217, 255 );
+		timerColors_[3].set (  74,  74, 104, 255 );
+		timerColors_[4].set ( 255, 200,  80, 255 );
+	}
 
 	return true;
 }
@@ -23,22 +39,31 @@ void Jackpot::restart() {
 	reset();
 }
 
-void Jackpot::draw(Evolve::ShapeRenderer& renderer) {
+void Jackpot::draw(Evolve::TextureRenderer& renderer) const {
 	
-	renderer.drawRectangle(
+	static Evolve::UvDimension uv { 0.0f, 0.0f, 1.0f, 1.0f };
+	static Evolve::ColorRgba texcolor { 255, 255, 255, 255 };
+
+	renderer.draw(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
 			positionInGrid_.x * Grid::CELL_SIZE,
 			positionInGrid_.y * Grid::CELL_SIZE,
 			JACKPOT_SIZE, JACKPOT_SIZE
 		),
-		color_
+		uv,
+		jackpotTextures_[currentJackpot_].id,
+		texcolor
 	);
+}
 
-	// TIMER
+void Jackpot::drawTimer(Evolve::ShapeRenderer& renderer) const {
+	
 	static float timerMaxWidth = windowWidth_ / 6.0f * 5.0f;
 
-	int timerWidth = (int) (((maxTime_ - currentTime_) / maxTime_) * timerMaxWidth);
+	int timerWidth = (int)(((maxTime_ - currentTime_) / maxTime_) * timerMaxWidth);
+
+	Evolve::ColorRgba timerColor = timerColors_[currentJackpot_];
 
 	renderer.drawRectangle(
 		Evolve::RectDimension(
@@ -47,7 +72,7 @@ void Jackpot::draw(Evolve::ShapeRenderer& renderer) {
 			64,
 			timerWidth, 16
 		),
-		color_
+		timerColor
 	);
 }
 
@@ -88,13 +113,15 @@ void Jackpot::startJackpot(int level) {
 		}
 	}
 
-	getRandom_ = std::uniform_int_distribution<int>(0, (int) availablePositionIndex_ - 1);
+	getRandomPosition_ = std::uniform_int_distribution<int>(0, (int) availablePositionIndex_ - 1);
 
-	positionInGrid_ = availablePositions_[getRandom_(randomEngine_)];
+	positionInGrid_ = availablePositions_[getRandomPosition_(randomEngine_)];
 
 	availablePositionIndex_ = 0;
 
 	grid_->addJackpotCells(positionInGrid_.y, positionInGrid_.x);
+
+	currentJackpot_ = getRandomJackpot_(randomEngine_);
 
 	haveToReset_ = true;
 }

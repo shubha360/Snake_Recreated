@@ -6,7 +6,7 @@
 #include <Evolve/ShapeRenderer.h>
 
 #include "Grid.h"
-#include "Fruit.h"
+#include "Food.h"
 #include "Jackpot.h"
 
 enum class SnakeDirection {
@@ -57,7 +57,7 @@ public:
 	Snake();
 	~Snake();
 
-	bool init(Grid* grid, Fruit* fruit, Jackpot* jackpot);
+	bool init(Grid* grid, Food* food, Jackpot* jackpot);
 
 	void restart();
 
@@ -79,7 +79,7 @@ private:
 	const int POINT_LOOP = 2;
 
 	Grid* grid_ = nullptr;
-	Fruit* fruit_ = nullptr;
+	Food* food_ = nullptr;
 	Jackpot* jackpot_ = nullptr;
 
 	std::vector<SnakeBodyPart> snake_;

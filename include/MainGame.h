@@ -63,13 +63,19 @@ private:
 
 	size_t gui_pauseText_ = -1;
 
+	// moving text at top
+	int movintTextEndingY_ = 0, movingTextStartingY_ = 0;
+
 	size_t gui_levelUpText_ = -1;
 	glm::ivec2 levelUpTextPos_ {};
+
+	bool levelingUp_ = false;
+
+	void updatelevelUpText(float deltaTime);
 
 	size_t gui_gameOverText_ = -1;
 	glm::ivec2 gameOverTextPos_ {};
 
-	int gameOverEndingY_ = 0, gameOverStartingY_ = 0;
 	bool gameOverUpdateNeeded_ = false;
 
 	void updateGameOverText(float deltaTime);

@@ -54,13 +54,15 @@ void MainGame::initGuiComponents() {
 	Evolve::ColorRgba bgColor { CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 255 };
 	Evolve::ColorRgba transparentColor { 0, 0, 0, 0 };
 
+	int topMargin = 10, horizontalMargin = 20;
+
 	// score and level
 	gui_scoreText_ = gui_.addPlainText(
 		"",
 		guiFont_vinique32_,
 		1.0f,
 		greyColor,
-		glm::ivec2(20, windowHeight_ - 10)
+		glm::ivec2(horizontalMargin, windowHeight_ - topMargin)
 	);
 
 	gui_.hideComponent(gui_scoreText_);
@@ -70,7 +72,7 @@ void MainGame::initGuiComponents() {
 	std::string quitText = "Quit";
 
 	Evolve::RectDimension quitButtonDims(Evolve::Origin::TOP_RIGHT,
-		windowWidth_ - 20, windowHeight_ - 10,
+		windowWidth_ - horizontalMargin, windowHeight_ - topMargin,
 		viniqueFont32_.getLineWidth(quitText), viniqueFont32_.getLineHeight());
 
 	gui_quitButton_ = gui_.addTextButton(
@@ -84,7 +86,7 @@ void MainGame::initGuiComponents() {
 	);
 
 	Evolve::RectDimension restartButtonDims(Evolve::Origin::TOP_RIGHT,
-		quitButtonDims.getLeft() - 20, quitButtonDims.getTop(),
+		quitButtonDims.getLeft() - horizontalMargin, quitButtonDims.getTop(),
 		viniqueFont32_.getLineWidth(restartText), viniqueFont32_.getLineHeight());
 
 	gui_restartButton_ = gui_.addTextButton(
@@ -158,14 +160,14 @@ void MainGame::initGuiComponents() {
 
 	gui_.hideComponent(gui_pauseText_);
 
-	// game over
+	// moving texts at top
+	movingTextStartingY_ = windowHeight_ + viniqueFont32_.getLineHeight();
+	movintTextEndingY_ = windowHeight_ - topMargin;
+
 	std::string gameOverText = "Game over!";
 
-	gameOverStartingY_ = windowHeight_ + viniqueFont32_.getLineHeight();
-	gameOverEndingY_ = windowHeight_ - 10;
-
 	gameOverTextPos_.x = windowWidth_ / 2 - viniqueFont32_.getLineWidth(gameOverText) / 2;
-	gameOverTextPos_.y = gameOverStartingY_;
+	gameOverTextPos_.y = movingTextStartingY_;
 
 	gui_gameOverText_ = gui_.addPlainText(
 		gameOverText,
@@ -176,6 +178,21 @@ void MainGame::initGuiComponents() {
 	);
 
 	gui_.hideComponent(gui_gameOverText_);
+
+	std::string levelUpText = "Level up!";
+
+	levelUpTextPos_.x = windowWidth_ / 2 - viniqueFont32_.getLineWidth(levelUpText) / 2;
+	levelUpTextPos_.y = movingTextStartingY_;
+
+	gui_levelUpText_ = gui_.addPlainText(
+		levelUpText,
+		guiFont_vinique32_,
+		1.0f,
+		greyColor,
+		levelUpTextPos_
+	);
+
+	gui_.hideComponent(gui_levelUpText_);
 }
 
 void MainGame::gameLoop() {
@@ -228,6 +245,10 @@ float MainGame::runGameSimulations(float previousTicks) {
 			jackpot_.update(deltaTime);
 		}
 		
+		if (levelingUp_) {
+			updatelevelUpText(deltaTime);
+		}
+
 		if (gameOverUpdateNeeded_) {
 			updateGameOverText(deltaTime);
 		}
@@ -318,6 +339,60 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 			level_++;
 			currentLevelScore_ = 0;
 			scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;
+			levelingUp_ = true;
+		}
+	}
+}
+
+void MainGame::updatelevelUpText(float deltaTime) {
+	static bool goingDown = true;
+	static bool atEndingPos = false;
+
+	static float stayedAtEndingPos = 0.0f;
+	static const float TO_STAY_AT_ENDING_POS = 120.0f;
+
+	if (gameState_ != GameState::PAUSE) {
+
+		if (goingDown) {
+
+			if (!atEndingPos) {
+				if (!gui_.isComponentVisible(gui_levelUpText_)) {
+					gui_.showComponent(gui_levelUpText_);
+				}
+
+				if (levelUpTextPos_.y > movintTextEndingY_) {
+					levelUpTextPos_.y -= 2 * deltaTime;
+					gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
+				}
+				else {
+					atEndingPos = true;
+				}
+			}
+
+			// at the ending position
+			else {
+				if (stayedAtEndingPos < TO_STAY_AT_ENDING_POS) {
+					stayedAtEndingPos += deltaTime;
+				}
+
+				// now start goin up
+				else {
+					goingDown = false;
+					stayedAtEndingPos = 0.0f;
+					atEndingPos = false;
+				}
+			}
+		}
+		else {
+			if (levelUpTextPos_.y < movingTextStartingY_) {
+				levelUpTextPos_.y += 2 * deltaTime;
+				gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
+			}
+			else {
+				gui_.hideComponent(gui_levelUpText_);
+				goingDown = true;
+				levelingUp_ = false;
+			}
 		}
 	}
 }
@@ -325,11 +400,17 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 void MainGame::updateGameOverText(float deltaTime) {
 	
 	if (gameState_ == GameState::ENDED) {
+		
+		// hide level up if visible
+		if (gui_.isComponentVisible(gui_levelUpText_)) {
+			gui_.hideComponent(gui_levelUpText_);
+		}
+
 		if (!gui_.isComponentVisible(gui_gameOverText_)) {
 			gui_.showComponent(gui_gameOverText_);
 		}
 
-		if (gameOverTextPos_.y > gameOverEndingY_) {
+		if (gameOverTextPos_.y > movintTextEndingY_) {
 			gameOverTextPos_.y -= 2 * deltaTime;
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}
@@ -338,7 +419,7 @@ void MainGame::updateGameOverText(float deltaTime) {
 		}
 	}
 	else {
-		if (gameOverTextPos_.y < gameOverStartingY_) {
+		if (gameOverTextPos_.y < movingTextStartingY_) {
 			gameOverTextPos_.y += 2 * deltaTime;
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}

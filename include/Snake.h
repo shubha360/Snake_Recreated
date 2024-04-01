@@ -88,5 +88,7 @@ private:
 	size_t currentSnakeMaxSize_ = startingSnakeReserveSize_;
 	size_t currentPartIndex_ = 0;
 
+	bool jackpotConsumed_ = false;
+
 	void createNewPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction);
 };

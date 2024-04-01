@@ -289,6 +289,7 @@ int Snake::move(float deltaTime, int level) {
 					);
 
 					jackpot_->consumed();
+					jackpotConsumed_ = true;
 				}
 
 				grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
@@ -342,7 +343,42 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	
 	static Evolve::ColorRgba HEAD_COLOR {  88, 185, 142, 255 };
 	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 255 };
-	static Evolve::ColorRgba TAIL_COLOR { 105, 210, 164, 255 };
+
+	// jackpot consumption graphics
+	static int ALPHA_CHANGE = 10;
+	static int jackpotAlphaGoingDown = true;
+	static int currentBodyAlpha = BODY_COLOR.alpha;
+
+	static int opaqueCount = 0;
+	static const int MAX_OPAQUES = 3;
+
+	if (jackpotConsumed_) {
+		if (jackpotAlphaGoingDown) {
+			currentBodyAlpha -= ALPHA_CHANGE;
+
+			if (currentBodyAlpha < 0) {
+				currentBodyAlpha = 0;
+				jackpotAlphaGoingDown = false;
+			}
+		}
+		else {
+			currentBodyAlpha += ALPHA_CHANGE;
+
+			if (currentBodyAlpha > 255) {
+				currentBodyAlpha = 255;
+				jackpotAlphaGoingDown = true;
+
+				opaqueCount++;
+
+				if (opaqueCount == MAX_OPAQUES) {
+					jackpotConsumed_ = false;
+					opaqueCount = 0;
+				}
+			}
+		}
+	
+		BODY_COLOR.alpha = currentBodyAlpha;
+	}	
 
 	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
 
@@ -412,12 +448,13 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 			BODY_SIZE
 		);
 
+		// main drawing
 		if (current.type_ == SnakePart::HEAD) {
 			renderer.drawRectangle(ghostDims, HEAD_COLOR);
 			renderer.drawRectangle(dims, HEAD_COLOR);
 		}
 		else {
-			
+
 			// have to print rotation cell
 			if (current.rotations_[current.currentRotationIndex_].rotateDirection_ != SnakeDirection::NONE &&
 				current.nextPositionInGridOffset_ == current.rotations_[current.currentRotationIndex_].rotatePositionInGrid_) {
@@ -430,10 +467,10 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 					BODY_SIZE
 				);
 
-				renderer.drawRectangle(rotationDims, TAIL_COLOR);
+				renderer.drawRectangle(rotationDims, BODY_COLOR);
 			}
-			renderer.drawRectangle(ghostDims, TAIL_COLOR);
-			renderer.drawRectangle(dims, TAIL_COLOR);
+			renderer.drawRectangle(ghostDims, BODY_COLOR);
+			renderer.drawRectangle(dims, BODY_COLOR);
 		}
 	}
 }

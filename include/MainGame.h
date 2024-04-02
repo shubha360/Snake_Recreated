@@ -89,8 +89,8 @@ private:
 	int fruitsConsumed_ = 0;
 	int level_ = 1;
 
-	const int SCORE_FIRST_LEVEL_UP = 250;
-	int scoreToLevelUp_ = SCORE_FIRST_LEVEL_UP;
+	const int FIRST_LEVEL_UP_SCORE = 400;
+	int scoreToLevelUp_ = FIRST_LEVEL_UP_SCORE;
 	int currentLevelScore_ = 0;
 
 	bool jackpotVisible_ = false;

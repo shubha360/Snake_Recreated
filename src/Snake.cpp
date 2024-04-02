@@ -110,7 +110,6 @@ int Snake::move(float deltaTime, int level) {
 				current.nextPositionInGrid_.x = current.currentPositionInGrid_.x - 1;
 				current.nextPositionInWorld_.x = current.nextPositionInGrid_.x * BODY_SIZE;
 			}
-
 			break;
 
 		case SnakeDirection::UP:
@@ -170,6 +169,8 @@ int Snake::move(float deltaTime, int level) {
 
 		if (positionChangedInGrid) {
 
+			bool newTailAdded = false;
+
 			current.nextPositionInGridOffset_ = current.nextPositionInGrid_;
 
 			SnakeBodyPart::OffsetPosition(current.nextPositionInGridOffset_,
@@ -193,6 +194,8 @@ int Snake::move(float deltaTime, int level) {
 						SnakeBodyPart::SetNextPosition(newTail, grid_->getNumRows(), grid_->getNumColumns());
 
 						grid_->addSnakeCell(newTail.currentPositionInGrid_.y, newTail.currentPositionInGrid_.x);
+						
+						newTailAdded = true;
 					}
 				}
 			}
@@ -265,6 +268,11 @@ int Snake::move(float deltaTime, int level) {
 					return -1;
 				}
 			}
+
+			// the new tail shouldn't move in this frame
+			if (newTailAdded) {
+				break;
+			}
 		}
 	}
 	return movementPoints;
@@ -309,7 +317,7 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	
 	static Evolve::ColorRgba HEAD_COLOR {  88, 185, 142, 255 };
-	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 50 };
+	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 255 };
 
 	// jackpot consumption graphics
 	static int ALPHA_CHANGE = 10;
@@ -319,7 +327,7 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	static int opaqueCount = 0;
 	static const int MAX_OPAQUES = 3;
 
-	/*if (jackpotConsumed_) {
+	if (jackpotConsumed_) {
 		if (jackpotAlphaGoingDown) {
 			currentBodyAlpha -= ALPHA_CHANGE;
 
@@ -345,7 +353,7 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 		}
 	
 		BODY_COLOR.alpha = currentBodyAlpha;
-	}	*/
+	}	
 
 	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
 

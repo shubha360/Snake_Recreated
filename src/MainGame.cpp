@@ -16,7 +16,7 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(false, 1720, 960, CLEAR_COLOR) &&
+		window_.init(true, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
 		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
@@ -271,9 +271,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static const int POINT_FRUIT = 10;
 	static const int POINT_JACKPOT = 50;
 
-	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 2;
+	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 6;
 
-	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 50;
+	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 100;
 	
 
 	if (!inputProcessed) {
@@ -338,7 +338,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		if (currentLevelScore_ >= scoreToLevelUp_) {
 			level_++;
 			currentLevelScore_ = 0;
-			scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;
+			scoreToLevelUp_ += (ADD_LEVEL_UP_SCORE_PER_LEVEL * level_ - 1);
 			levelingUp_ = true;
 		}
 	}
@@ -447,7 +447,7 @@ void MainGame::restart() {
 	fruitsConsumed_ = 0;
 	level_ = 1;
 
-	scoreToLevelUp_ = SCORE_FIRST_LEVEL_UP;
+	scoreToLevelUp_ = FIRST_LEVEL_UP_SCORE;
 	currentLevelScore_ = 0;
 
 	jackpotVisible_ = false;

@@ -16,7 +16,7 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(true, 1720, 960, CLEAR_COLOR) &&
+		window_.init(false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
 		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
@@ -557,6 +557,14 @@ void MainGame::printFps() {
 
 void MainGame::freeSnake() {
 	shapeRenderer_.freeShapeRenderer();
+	textureRenderer_.freeTextureRenderer();
+
+	gui_.freeGui();
+	guiRenderer_.freeGuiRenderer();
+
+	viniqueFont16_.deleteFont();
+	viniqueFont32_.deleteFont();
+	viniqueFont128_.deleteFont();
 
 	window_.deleteWindow();
 }

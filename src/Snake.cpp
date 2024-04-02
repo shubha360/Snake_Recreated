@@ -189,13 +189,8 @@ int Snake::move(float deltaTime, int level) {
 
 						newTail.type_ = SnakePart::TAIL;
 						newTail.direction_ = current.direction_;
-						newTail.nextPositionInGrid_ = current.currentPositionInGrid_;
-						newTail.nextPositionInWorld_ = current.currentPositionInWorld_;
 
-						newTail.nextPositionInGridOffset_ = newTail.nextPositionInGrid_;
-
-						SnakeBodyPart::OffsetPosition(newTail.nextPositionInGridOffset_,
-							grid_->getNumRows(), grid_->getNumColumns());
+						SnakeBodyPart::SetNextPosition(newTail, grid_->getNumRows(), grid_->getNumColumns());
 
 						grid_->addSnakeCell(newTail.currentPositionInGrid_.y, newTail.currentPositionInGrid_.x);
 					}
@@ -213,35 +208,7 @@ int Snake::move(float deltaTime, int level) {
 
 				current.currentRotationIndex_ = (current.currentRotationIndex_ + 1) % ((int) current.rotations_.size() - 1);
 
-				switch (current.direction_) {
-				case SnakeDirection::RIGHT:
-					current.nextPositionInGrid_.x = current.currentPositionInGrid_.x + 1;
-					current.nextPositionInGrid_.y = current.currentPositionInGrid_.y;
-					break;
-
-				case SnakeDirection::LEFT:
-					current.nextPositionInGrid_.x = current.currentPositionInGrid_.x - 1;
-					current.nextPositionInGrid_.y = current.currentPositionInGrid_.y;
-					break;
-
-				case SnakeDirection::UP:
-					current.nextPositionInGrid_.x = current.currentPositionInGrid_.x;
-					current.nextPositionInGrid_.y = current.currentPositionInGrid_.y + 1;
-					break;
-
-				case SnakeDirection::DOWN:
-					current.nextPositionInGrid_.x = current.currentPositionInGrid_.x;
-					current.nextPositionInGrid_.y = current.currentPositionInGrid_.y - 1;
-					break;
-				}
-
-				current.nextPositionInWorld_.x = current.nextPositionInGrid_.x * Snake::BODY_SIZE;
-				current.nextPositionInWorld_.y = current.nextPositionInGrid_.y * Snake::BODY_SIZE;
-
-				current.nextPositionInGridOffset_ = current.nextPositionInGrid_;
-
-				SnakeBodyPart::OffsetPosition(current.nextPositionInGridOffset_,
-					grid_->getNumRows(), grid_->getNumColumns());
+				SnakeBodyPart::SetNextPosition(current, grid_->getNumRows(), grid_->getNumColumns());
 
 				if (current.type_ == SnakePart::HEAD) {
 					movementPoints += POINT_ROTAION;
@@ -342,7 +309,7 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	
 	static Evolve::ColorRgba HEAD_COLOR {  88, 185, 142, 255 };
-	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 255 };
+	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 50 };
 
 	// jackpot consumption graphics
 	static int ALPHA_CHANGE = 10;
@@ -352,7 +319,7 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 	static int opaqueCount = 0;
 	static const int MAX_OPAQUES = 3;
 
-	if (jackpotConsumed_) {
+	/*if (jackpotConsumed_) {
 		if (jackpotAlphaGoingDown) {
 			currentBodyAlpha -= ALPHA_CHANGE;
 
@@ -378,7 +345,7 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 		}
 	
 		BODY_COLOR.alpha = currentBodyAlpha;
-	}	
+	}	*/
 
 	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
 
@@ -489,7 +456,7 @@ void Snake::createNewPart(const SnakePart type, const glm::ivec2& positionInGrid
 }
 
 SnakeBodyPart::SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction,
-	const size_t numRows, const size_t numCollumns) {
+	const size_t numRows, const size_t numColumns) {
 
 	type_ = type;
 	direction_ = direction;
@@ -499,39 +466,7 @@ SnakeBodyPart::SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInG
 	currentPositionInWorld_.x = currentPositionInGrid_.x * Snake::BODY_SIZE;
 	currentPositionInWorld_.y = currentPositionInGrid_.y * Snake::BODY_SIZE;
 
-	switch (direction_) {
-	
-	case SnakeDirection::RIGHT:
-		nextPositionInGrid_.x = currentPositionInGrid_.x + 1;
-		nextPositionInGrid_.y = currentPositionInGrid_.y;
-		break;
-
-	case SnakeDirection::LEFT:
-		nextPositionInGrid_.x = currentPositionInGrid_.x - 1;
-		nextPositionInGrid_.y = currentPositionInGrid_.y;
-		break;
-
-	case SnakeDirection::UP:
-		nextPositionInGrid_.x = currentPositionInGrid_.x;
-		nextPositionInGrid_.y = currentPositionInGrid_.y + 1;
-		break;
-
-	case SnakeDirection::DOWN:
-		nextPositionInGrid_.x = currentPositionInGrid_.x;
-		nextPositionInGrid_.y = currentPositionInGrid_.y - 1;
-		break;
-
-	default:
-		nextPositionInGrid_.x = 0;
-		nextPositionInGrid_.y = 0;
-		break;
-	}
-
-	nextPositionInWorld_.x = nextPositionInGrid_.x * Snake::BODY_SIZE;
-	nextPositionInWorld_.y = nextPositionInGrid_.y * Snake::BODY_SIZE;
-
-	nextPositionInGridOffset_ = nextPositionInGrid_;
-	OffsetPosition(nextPositionInGridOffset_, numRows, numCollumns);
+	SetNextPosition(*this, numRows, numColumns);
 
 	rotations_.resize(4);
 }
@@ -554,4 +489,36 @@ bool SnakeBodyPart::OffsetPosition(glm::ivec2& position, size_t numRows, size_t 
 		return true;
 	}
 	return false;
+}
+
+void SnakeBodyPart::SetNextPosition(SnakeBodyPart& part, size_t numRows, size_t numColumns) {
+	
+	switch (part.direction_) {
+
+	case SnakeDirection::RIGHT:
+		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x + 1;
+		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y;
+		break;
+
+	case SnakeDirection::LEFT:
+		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x - 1;
+		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y;
+		break;
+
+	case SnakeDirection::UP:
+		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x;
+		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y + 1;
+		break;
+
+	case SnakeDirection::DOWN:
+		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x;
+		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y - 1;
+		break;
+	}
+
+	part.nextPositionInWorld_.x = part.nextPositionInGrid_.x * Snake::BODY_SIZE;
+	part.nextPositionInWorld_.y = part.nextPositionInGrid_.y * Snake::BODY_SIZE;
+
+	part.nextPositionInGridOffset_ = part.nextPositionInGrid_;
+	OffsetPosition(part.nextPositionInGridOffset_, numRows, numColumns);
 }

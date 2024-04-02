@@ -44,8 +44,8 @@ bool Food::init(Grid * grid) {
 		loadTexture("resources/images/foods/tulip.png",					foodTextures_[index++]);
 	}
 
-	positionInGrid_.x = 25;
-	positionInGrid_.y = 10;
+	positionInGrid_.x = STARTING_X;
+	positionInGrid_.y = STARTING_Y;
 
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
@@ -59,8 +59,8 @@ void Food::restart() {
 	consumed_ = false;
 	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
 
-	positionInGrid_.x = 25;
-	positionInGrid_.y = 10;
+	positionInGrid_.x = STARTING_X;
+	positionInGrid_.y = STARTING_Y;
 
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;

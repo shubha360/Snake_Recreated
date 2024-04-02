@@ -20,6 +20,7 @@ public:
 private:
 
 	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
+	static const int STARTING_X = 25, STARTING_Y = 10;
 
 	std::uniform_int_distribution<size_t> getRandomX_;
 	std::uniform_int_distribution<size_t> getRandomY_;

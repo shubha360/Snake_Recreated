@@ -4,7 +4,11 @@ const int Jackpot::JACKPOT_SIZE = Grid::CELL_SIZE * 2;
 
 Jackpot::Jackpot() {}
 
-Jackpot::~Jackpot() {}
+Jackpot::~Jackpot() {	
+	for (int i = 0; i < 5; i++) {
+		Evolve::ImageLoader::DeleteTexture(jackpotTextures_[i]);
+	}
+}
 
 bool Jackpot::init(Grid* grid) {
 	grid_ = grid;

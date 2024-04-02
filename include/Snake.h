@@ -47,6 +47,8 @@ public:
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
 
 	static bool OffsetPosition(glm::ivec2& position, size_t numRows, size_t numColumns);
+	
+	static void SetNextPosition(SnakeBodyPart& part, size_t numRows, size_t numColumns);
 };
 
 class Snake {
@@ -74,7 +76,6 @@ public:
 	inline std::vector<SnakeBodyPart>& getWholeSnake() { return snake_; }
 
 private:
-	
 	const int POINT_ROTAION = 1;
 	const int POINT_LOOP = 2;
 

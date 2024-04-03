@@ -15,7 +15,7 @@ public:
 
 	void draw(Evolve::TextureRenderer& renderer) const override;
 
-	void drawTimer(Evolve::ShapeRenderer& renderer) const;
+	void drawTimer(Evolve::TextureRenderer& renderer) const;
 
 	void reset() override;
 
@@ -46,7 +46,11 @@ private:
 	std::uniform_int_distribution<int> getRandomPosition_;
 	std::uniform_int_distribution<int> getRandomJackpot_;
 
-	Evolve::TextureData jackpotTextures_[5];
-	Evolve::ColorRgba timerColors_[5];
+	Evolve::TextureData jackpotTextures_[5] {};
 	int currentJackpot_ = 0;
+
+	Evolve::TextureData timerTexture_;
+	Evolve::ColorRgba timerColors_[5] {};
+
+	static const Evolve::UvDimension uv;
 };

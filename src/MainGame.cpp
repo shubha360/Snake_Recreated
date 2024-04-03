@@ -19,7 +19,6 @@ bool MainGame::initEngineComps() {
 		window_.init(false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
-		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
 		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
 		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
 		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&
@@ -211,6 +210,10 @@ void MainGame::gameLoop() {
 
 		previousTicks = runGameSimulations(previousTicks);
 
+		/*if (levelingUp_ && gameState_ == GameState::PLAY) {
+			updateLevelUpBg();
+		}*/
+
 		draw();
 
 		fps_.endFrame();
@@ -255,10 +258,6 @@ float MainGame::runGameSimulations(float previousTicks) {
 		
 		gui_.updateTime(deltaTime);
 
-		if (gameState_ == GameState::ENDED) {
-			break;
-		}
-
 		totalDeltaTime -= deltaTime;
 		i++;
 	}
@@ -300,7 +299,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	if (snake_.move(deltaTime, level_, points)) {
 		
 		if (points == -1) {
-			gameState_ = GameState::ENDED;
+			gameState_ = GameState::GAME_OVER;
 			gameOverUpdateNeeded_ = true;
 		}
 		else {
@@ -340,7 +339,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 			if (currentLevelScore_ >= scoreToLevelUp_) {
 				level_++;
 				currentLevelScore_ = 0;
-				scoreToLevelUp_ += (ADD_LEVEL_UP_SCORE_PER_LEVEL * level_ - 1);
+				scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;
 				levelingUp_ = true;
 			}
 		}
@@ -400,9 +399,20 @@ void MainGame::updatelevelUpText(float deltaTime) {
 	}
 }
 
+void MainGame::updateLevelUpBg() {
+	//static Evolve::ColorRgba currentClearColor = CLEAR_COLOR;
+	//static bool goingDown = true;
+
+	//if () {
+
+	//}
+
+	//window_.
+}
+
 void MainGame::updateGameOverText(float deltaTime) {
 	
-	if (gameState_ == GameState::ENDED) {
+	if (gameState_ == GameState::GAME_OVER) {
 		
 		// hide level up if visible
 		if (gui_.isComponentVisible(gui_levelUpText_)) {
@@ -459,7 +469,7 @@ void MainGame::restart() {
 	food_.restart();
 	jackpot_.restart();
 
-	if (gameState_ == GameState::ENDED) {
+	if (gameState_ == GameState::GAME_OVER) {
 		gameOverUpdateNeeded_ = true;
 	}
 
@@ -514,27 +524,21 @@ void MainGame::draw() {
 
 	textureRenderer_.begin();
 
-	food_.draw(textureRenderer_);
+		food_.draw(textureRenderer_);
 
-	if (jackpotVisible_) {
-		jackpot_.draw(textureRenderer_);
-	}
+		if (jackpotVisible_) {
+			jackpot_.draw(textureRenderer_);
+		}
+
+		snake_.draw(textureRenderer_);
+
+		if (jackpotVisible_) {
+			jackpot_.drawTimer(textureRenderer_);
+		}
 
 	textureRenderer_.end();
 
 	textureRenderer_.renderTextures(camera_);
-
-	shapeRenderer_.begin();
-
-	snake_.draw(shapeRenderer_);
-
-	if (jackpotVisible_) {
-		jackpot_.drawTimer(shapeRenderer_);
-	}
-
-	shapeRenderer_.end();
-
-	shapeRenderer_.renderShapes(camera_);
 
 	std::string scoreText = "Level: " + std::to_string(level_) + "\n" +
 		"Score: " + std::to_string(score_);
@@ -559,7 +563,6 @@ void MainGame::printFps() {
 }
 
 void MainGame::freeSnake() {
-	shapeRenderer_.freeShapeRenderer();
 	textureRenderer_.freeTextureRenderer();
 
 	gui_.freeGui();

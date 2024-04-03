@@ -3,7 +3,7 @@
 Grid::Grid() {}
 
 Grid::~Grid() {
-    Evolve::ImageLoader::DeleteTexture(cellTexture_);
+    /*Evolve::ImageLoader::DeleteTexture(cellTexture_);*/
 }
 
 bool Grid::init(const int windowWidth, const int windowHeight) {
@@ -17,37 +17,37 @@ bool Grid::init(const int windowWidth, const int windowHeight) {
         str = std::string(numColumns_, EMPTY_SIGN);
     }
 
-    Evolve::ImageLoader::LoadTextureFromImage("resources/images/cell.png", cellTexture_, 4);
+    /*Evolve::ImageLoader::LoadTextureFromImage("resources/images/cell.png", cellTexture_, 4);
     Evolve::ImageLoader::BufferTextureData(cellTexture_);
-    Evolve::ImageLoader::FreeTexture(cellTexture_);
+    Evolve::ImageLoader::FreeTexture(cellTexture_);*/
 
     return true;
 }
 
-void Grid::printGrid(Evolve::TextureRenderer& renderer) {
-    static Evolve::UvDimension uv { 0.0f, 0.0f, 1.0f, 1.0f };
-
-    static Evolve::ColorRgba whiteColor { 255, 255, 255, 255 };
-    static Evolve::ColorRgba blackColor{ 0, 0, 0, 255 };
-
-    for (int row = 0; row < grid_.size(); row++) {
-
-        auto& currentRow = grid_[row];
-
-        for (int column = 0; column < currentRow.size(); column++) {
-
-            Evolve::RectDimension dims(
-                Evolve::Origin::BOTTOM_LEFT,
-                column * CELL_SIZE,
-                row * CELL_SIZE,
-                CELL_SIZE,
-                CELL_SIZE
-            );
-
-            renderer.draw(dims, uv, cellTexture_.id, whiteColor);
-        }
-    }
-}
+//void Grid::printGrid(Evolve::TextureRenderer& renderer) {
+//    static Evolve::UvDimension uv { 0.0f, 0.0f, 1.0f, 1.0f };
+//
+//    static Evolve::ColorRgba whiteColor { 255, 255, 255, 255 };
+//    static Evolve::ColorRgba blackColor{ 0, 0, 0, 255 };
+//
+//    for (int row = 0; row < grid_.size(); row++) {
+//
+//        auto& currentRow = grid_[row];
+//
+//        for (int column = 0; column < currentRow.size(); column++) {
+//
+//            Evolve::RectDimension dims(
+//                Evolve::Origin::BOTTOM_LEFT,
+//                column * CELL_SIZE,
+//                row * CELL_SIZE,
+//                CELL_SIZE,
+//                CELL_SIZE
+//            );
+//
+//            renderer.draw(dims, uv, cellTexture_.id, whiteColor);
+//        }
+//    }
+//}
 
 void Grid::addSnakeCell(const size_t row, const size_t column) {
     grid_[row][column] = SNAKE_SIGN;

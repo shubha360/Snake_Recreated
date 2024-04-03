@@ -71,7 +71,7 @@ public:
 
 	void changeDirection(const SnakeDirection newDirection);
 
-	void draw(Evolve::ShapeRenderer& renderer);
+	void draw(Evolve::TextureRenderer& renderer);
 
 	inline SnakeBodyPart getHead() const { return snake_[0]; }
 	
@@ -80,6 +80,8 @@ public:
 private:
 	const int POINT_ROTAION = 1;
 	const int POINT_LOOP = 2;
+
+	Evolve::TextureData bodyTexture_;
 
 	Grid* grid_ = nullptr;
 	Food* food_ = nullptr;

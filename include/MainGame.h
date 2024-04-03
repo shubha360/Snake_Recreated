@@ -17,7 +17,7 @@
 #include "Jackpot.h"
 
 enum class GameState {
-	MAIN_MENU, PLAY, PAUSE, ENDED, QUIT
+	MAIN_MENU, PLAY, PAUSE, GAME_OVER, QUIT
 };
 
 class MainGame {
@@ -38,7 +38,6 @@ private:
 	Evolve::Camera camera_;
 	Evolve::Fps fps_;
 	Evolve::InputProcessor inputProcessor_;
-	Evolve::ShapeRenderer shapeRenderer_;
 	Evolve::TextureRenderer textureRenderer_;
 	Evolve::Gui gui_;
 	Evolve::GuiRenderer guiRenderer_;
@@ -72,6 +71,7 @@ private:
 	bool levelingUp_ = false;
 
 	void updatelevelUpText(float deltaTime);
+	void updateLevelUpBg();
 
 	size_t gui_gameOverText_ = -1;
 	glm::ivec2 gameOverTextPos_ {};
@@ -89,7 +89,7 @@ private:
 	int fruitsConsumed_ = 0;
 	int level_ = 1;
 
-	const int FIRST_LEVEL_UP_SCORE = 400;
+	const int FIRST_LEVEL_UP_SCORE = 350;
 	int scoreToLevelUp_ = FIRST_LEVEL_UP_SCORE;
 	int currentLevelScore_ = 0;
 

@@ -1,6 +1,7 @@
 #include "../include/Jackpot.h"
 
 const int Jackpot::JACKPOT_SIZE = Grid::CELL_SIZE * 2;
+const Evolve::UvDimension Jackpot::uv { 0.0f, 0.0f, 1.0f, 1.0f };
 
 Jackpot::Jackpot() {}
 
@@ -8,6 +9,7 @@ Jackpot::~Jackpot() {
 	for (int i = 0; i < 5; i++) {
 		Evolve::ImageLoader::DeleteTexture(jackpotTextures_[i]);
 	}
+	Evolve::ImageLoader::DeleteTexture(timerTexture_);
 }
 
 bool Jackpot::init(Grid* grid) {
@@ -20,7 +22,7 @@ bool Jackpot::init(Grid* grid) {
 
 	getRandomJackpot_ = std::uniform_int_distribution<int>(0, 4);
 
-	{ // initializing jackpot textures and colors
+	{ // initializing jackpot and timer textures and colors
 		int index = 0;
 
 		loadTexture("resources/images/jackpots/diamond.png",	jackpotTextures_[index++]);
@@ -29,11 +31,13 @@ bool Jackpot::init(Grid* grid) {
 		loadTexture("resources/images/jackpots/rock.png",		jackpotTextures_[index++]);
 		loadTexture("resources/images/jackpots/star.png",		jackpotTextures_[index++]);
 
-		timerColors_[0].set ( 255,  57, 151, 255 );
-		timerColors_[1].set (   0, 140, 223, 255 );
-		timerColors_[2].set ( 142,  81, 217, 255 );
-		timerColors_[3].set (  74,  74, 104, 255 );
-		timerColors_[4].set ( 255, 200,  80, 255 );
+		timerColors_[0].set ( 255,  57, 151, 200 );
+		timerColors_[1].set (   0, 140, 223, 200 );
+		timerColors_[2].set ( 142,  81, 217, 200 );
+		timerColors_[3].set (  74,  74, 104, 200 );
+		timerColors_[4].set ( 255, 200,  80, 200 );
+
+		loadTexture("resources/images/timer.png", timerTexture_);
 	}
 
 	return true;
@@ -45,8 +49,7 @@ void Jackpot::restart() {
 
 void Jackpot::draw(Evolve::TextureRenderer& renderer) const {
 	
-	static Evolve::UvDimension uv { 0.0f, 0.0f, 1.0f, 1.0f };
-	static Evolve::ColorRgba texcolor { 255, 255, 255, 255 };
+	static const Evolve::ColorRgba texColor { 255, 255, 255, 255 };
 
 	renderer.draw(
 		Evolve::RectDimension(
@@ -57,26 +60,25 @@ void Jackpot::draw(Evolve::TextureRenderer& renderer) const {
 		),
 		uv,
 		jackpotTextures_[currentJackpot_].id,
-		texcolor
+		texColor
 	);
 }
 
-void Jackpot::drawTimer(Evolve::ShapeRenderer& renderer) const {
-	
+void Jackpot::drawTimer(Evolve::TextureRenderer& renderer) const {
 	static float timerMaxWidth = windowWidth_ / 6.0f * 5.0f;
 
 	int timerWidth = (int)(((maxTime_ - currentTime_) / maxTime_) * timerMaxWidth);
 
-	Evolve::ColorRgba timerColor = timerColors_[currentJackpot_];
-
-	renderer.drawRectangle(
+	renderer.draw(
 		Evolve::RectDimension(
 			Evolve::Origin::CENTER,
 			windowWidth_ / 2,
 			64,
 			timerWidth, 16
 		),
-		timerColor
+		uv,
+		timerTexture_.id,
+		timerColors_[currentJackpot_]
 	);
 }
 

@@ -20,7 +20,7 @@ public:
 
 	bool init(const int windowWidth, const int windowHeight);
 
-	void printGrid(Evolve::TextureRenderer& renderer);
+	//void printGrid(Evolve::TextureRenderer& renderer);
 
 	void addSnakeCell(const size_t row, const size_t column);
 	void addFruitCell(const size_t row, const size_t column);
@@ -40,6 +40,6 @@ private:
 	size_t numRows_ = 0, numColumns_ = 0;
 	std::vector<std::string> grid_;
 
-	Evolve::TextureData cellTexture_;
+	//Evolve::TextureData cellTexture_;
 };
 

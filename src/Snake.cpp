@@ -5,7 +5,9 @@ const float Snake::SPEED = 5.0f;
 
 Snake::Snake() {}
 
-Snake::~Snake() {}
+Snake::~Snake() {
+	Evolve::ImageLoader::DeleteTexture(bodyTexture_);
+}
 
 bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
@@ -15,9 +17,22 @@ bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 	food_ = food;
 	jackpot_ = jackpot;
 
+
+	/*createNewPart(SnakePart::HEAD, glm::ivec2(40, 10), SnakeDirection::RIGHT);
+
+	for (int i = 39; i > 0; i--) {
+		createNewPart(SnakePart::BODY, glm::ivec2(i, 10), SnakeDirection::RIGHT);
+	}
+
+	createNewPart(SnakePart::TAIL, glm::ivec2(0, 10), SnakeDirection::RIGHT);*/
+
 	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
 	createNewPart(SnakePart::BODY, glm::ivec2(11, 10), SnakeDirection::RIGHT);
 	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
+
+	Evolve::ImageLoader::LoadTextureFromImage("resources/images/body.png", bodyTexture_, 4);
+	Evolve::ImageLoader::BufferTextureData(bodyTexture_);
+	Evolve::ImageLoader::FreeTexture(bodyTexture_);
 
 	return true;
 }
@@ -320,10 +335,12 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 	}
 }
 
-void Snake::draw(Evolve::ShapeRenderer& renderer) {
+void Snake::draw(Evolve::TextureRenderer& renderer) {
 	
 	static Evolve::ColorRgba HEAD_COLOR {  88, 185, 142, 255 };
 	static Evolve::ColorRgba BODY_COLOR { 105, 210, 164, 255 };
+
+	static const Evolve::UvDimension uv { 0.0f, 0.0f, 1.0f, 1.0f };
 
 	// jackpot consumption graphics
 	static int ALPHA_CHANGE = 10;
@@ -431,8 +448,8 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 
 		// main drawing
 		if (current.type_ == SnakePart::HEAD) {
-			renderer.drawRectangle(ghostDims, HEAD_COLOR);
-			renderer.drawRectangle(dims, HEAD_COLOR);
+			renderer.draw(ghostDims, uv, bodyTexture_.id, HEAD_COLOR);
+			renderer.draw(dims, uv, bodyTexture_.id, HEAD_COLOR);
 		}
 		else {
 
@@ -448,10 +465,10 @@ void Snake::draw(Evolve::ShapeRenderer& renderer) {
 					BODY_SIZE
 				);
 
-				renderer.drawRectangle(rotationDims, BODY_COLOR);
+				renderer.draw(rotationDims, uv, bodyTexture_.id, BODY_COLOR);
 			}
-			renderer.drawRectangle(ghostDims, BODY_COLOR);
-			renderer.drawRectangle(dims, BODY_COLOR);
+			renderer.draw(ghostDims, uv, bodyTexture_.id, BODY_COLOR);
+			renderer.draw(dims, uv, bodyTexture_.id, BODY_COLOR);
 		}
 	}
 }

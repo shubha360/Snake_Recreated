@@ -63,9 +63,11 @@ public:
 
 	void restart();
 
-	// returns the point for rotations and loops,
-	// returns -1 on death
-	int move(float deltaTime, int level);
+	// returns true if snake changed position in grid, otherwise false, 
+	// don't have to check for anything if the snake didn't change it's position in grid
+	// pointHolder gets the point for rotations and loops,
+	// pointHolder is -1 on death
+	bool move(float deltaTime, int level, int& pointHolder);
 
 	void changeDirection(const SnakeDirection newDirection);
 

@@ -44,9 +44,14 @@ void Snake::restart() {
 	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
 }
 
-int Snake::move(float deltaTime, int level) {
+// returns true if snake changed position in grid, otherwise false, 
+// don't have to check for anything if the snake didn't change it's position in grid
+// pointHolder gets the point for rotations and loops,
+// pointHolder is -1 on death
+bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
-	int movementPoints = 0;
+	pointHolder = 0;
+	bool changedPosition = false;
 
 	for (int i = 0; i < snake_.size(); i++) {
 
@@ -73,7 +78,7 @@ int Snake::move(float deltaTime, int level) {
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
 					if (current.type_ == SnakePart::HEAD) {
-						movementPoints += POINT_LOOP;
+						pointHolder += POINT_LOOP;
 					}
 
 					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
@@ -101,7 +106,7 @@ int Snake::move(float deltaTime, int level) {
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
 					if (current.type_ == SnakePart::HEAD) {
-						movementPoints += POINT_LOOP;
+						pointHolder += POINT_LOOP;
 					}
 
 					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
@@ -128,7 +133,7 @@ int Snake::move(float deltaTime, int level) {
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
 					if (current.type_ == SnakePart::HEAD) {
-						movementPoints += POINT_LOOP;
+						pointHolder += POINT_LOOP;
 					}
 
 					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
@@ -155,7 +160,7 @@ int Snake::move(float deltaTime, int level) {
 					grid_->getNumRows(), grid_->getNumColumns())) {
 
 					if (current.type_ == SnakePart::HEAD) {
-						movementPoints += POINT_LOOP;
+						pointHolder += POINT_LOOP;
 					}
 
 					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
@@ -170,6 +175,7 @@ int Snake::move(float deltaTime, int level) {
 		if (positionChangedInGrid) {
 
 			bool newTailAdded = false;
+			changedPosition = true;
 
 			current.nextPositionInGridOffset_ = current.nextPositionInGrid_;
 
@@ -214,7 +220,7 @@ int Snake::move(float deltaTime, int level) {
 				SnakeBodyPart::SetNextPosition(current, grid_->getNumRows(), grid_->getNumColumns());
 
 				if (current.type_ == SnakePart::HEAD) {
-					movementPoints += POINT_ROTAION;
+					pointHolder += POINT_ROTAION;
 				}
 
 				if (current.type_ != SnakePart::TAIL) {
@@ -265,7 +271,7 @@ int Snake::move(float deltaTime, int level) {
 				grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
 
 				if (ateSelf) {
-					return -1;
+					pointHolder = -1;
 				}
 			}
 
@@ -275,7 +281,7 @@ int Snake::move(float deltaTime, int level) {
 			}
 		}
 	}
-	return movementPoints;
+	return changedPosition;
 }
 
 void Snake::changeDirection(const SnakeDirection newDirection) {

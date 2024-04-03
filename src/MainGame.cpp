@@ -16,7 +16,7 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(true, 1720, 960, CLEAR_COLOR) &&
+		window_.init(false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
 		shapeRenderer_.init("../Evolve-Engine/engine-assets") &&
@@ -295,51 +295,54 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 		}
 	}
 
-	int nextMove = snake_.move(deltaTime, level_);
+	int points = 0;
 
-	if (nextMove == -1) {
-		gameState_ = GameState::ENDED;
-		gameOverUpdateNeeded_ = true;
-	}
-	else {
-		score_ += nextMove;
-		currentLevelScore_ += nextMove;
+	if (snake_.move(deltaTime, level_, points)) {
+		
+		if (points == -1) {
+			gameState_ = GameState::ENDED;
+			gameOverUpdateNeeded_ = true;
+		}
+		else {
+			score_ += points;
+			currentLevelScore_ += points;
 
-		if (food_.isConsumed()) {
+			if (food_.isConsumed()) {
 
-			score_ += POINT_FRUIT;
-			currentLevelScore_ += POINT_FRUIT;
+				score_ += POINT_FRUIT;
+				currentLevelScore_ += POINT_FRUIT;
 
-			food_.reset();
-			fruitsConsumed_++;
+				food_.reset();
+				fruitsConsumed_++;
 
-			if (fruitsConsumed_ % NUM_FRUIT_FOR_JACKPOT_SPAWN == 0) {
-				jackpot_.reset();
-				jackpot_.startJackpot(level_);
-				jackpotVisible_ = true;
+				if (fruitsConsumed_ % NUM_FRUIT_FOR_JACKPOT_SPAWN == 0) {
+					jackpot_.reset();
+					jackpot_.startJackpot(level_);
+					jackpotVisible_ = true;
+				}
 			}
-		}
 
-		if (jackpot_.isConsumed()) {
-			score_ += POINT_JACKPOT;
-			currentLevelScore_ += POINT_JACKPOT;
+			if (jackpot_.isConsumed()) {
+				score_ += POINT_JACKPOT;
+				currentLevelScore_ += POINT_JACKPOT;
 
-			jackpot_.reset();
+				jackpot_.reset();
 
-			jackpotVisible_ = false;
-		}
-		else if (jackpot_.isLost()) {
-			jackpotVisible_ = false;
+				jackpotVisible_ = false;
+			}
+			else if (jackpot_.isLost()) {
+				jackpotVisible_ = false;
 
-			jackpot_.reset();
-		}
+				jackpot_.reset();
+			}
 
-		// level up
-		if (currentLevelScore_ >= scoreToLevelUp_) {
-			level_++;
-			currentLevelScore_ = 0;
-			scoreToLevelUp_ += (ADD_LEVEL_UP_SCORE_PER_LEVEL * level_ - 1);
-			levelingUp_ = true;
+			// level up
+			if (currentLevelScore_ >= scoreToLevelUp_) {
+				level_++;
+				currentLevelScore_ = 0;
+				scoreToLevelUp_ += (ADD_LEVEL_UP_SCORE_PER_LEVEL * level_ - 1);
+				levelingUp_ = true;
+			}
 		}
 	}
 }

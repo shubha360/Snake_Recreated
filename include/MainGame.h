@@ -30,7 +30,7 @@ public:
 
 private:
 	const float MAX_FPS = 60.0f;
-	const Evolve::ColorRgba CLEAR_COLOR { 221, 255, 242, 255 };
+	const Evolve::ColorRgba CLEAR_COLOR { 222, 255, 242, 255 };
 	GameState gameState_ = GameState::MAIN_MENU;
 	unsigned int windowWidth_ = 0, windowHeight_ = 0;
 
@@ -43,12 +43,10 @@ private:
 	Evolve::GuiRenderer guiRenderer_;
 	Evolve::Font viniqueFont32_;
 	Evolve::Font viniqueFont128_;
-	Evolve::Font viniqueFont16_;
 
 	// gui font ids
 	size_t guiFont_vinique32_ = -1;
 	size_t guiFont_vinique128_ = -1;
-	size_t guiFont_vinique16_ = -1;
 
 	// gui component ids
 	size_t gui_bgPanel_ = -1;
@@ -71,7 +69,6 @@ private:
 	bool levelingUp_ = false;
 
 	void updatelevelUpText(float deltaTime);
-	void updateLevelUpBg();
 
 	size_t gui_gameOverText_ = -1;
 	glm::ivec2 gameOverTextPos_ {};

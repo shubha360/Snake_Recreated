@@ -16,13 +16,12 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(false, 1720, 960, CLEAR_COLOR) &&
+		window_.init(true, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
 		fps_.init(MAX_FPS) &&
 		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
 		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
-		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&
-		viniqueFont16_.initFromFontFile("Sunshine 16", "resources/fonts/vinque.rg-regular.otf", 20) &&
+		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&		
 		gui_.init() &&
 		guiRenderer_.init("../Evolve-Engine/engine-assets");
 }
@@ -47,7 +46,7 @@ bool MainGame::initGame() {
 void MainGame::initGuiComponents() {
 	guiFont_vinique32_ = gui_.addFont(viniqueFont32_);
 	guiFont_vinique128_ = gui_.addFont(viniqueFont128_);
-	guiFont_vinique16_ = gui_.addFont(viniqueFont16_);
+	//guiFont_vinique16_ = gui_.addFont(viniqueFont16_);
 
 	Evolve::ColorRgba greyColor { 50, 50, 50, 255 };
 	Evolve::ColorRgba bgColor { CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 255 };
@@ -210,10 +209,6 @@ void MainGame::gameLoop() {
 
 		previousTicks = runGameSimulations(previousTicks);
 
-		/*if (levelingUp_ && gameState_ == GameState::PLAY) {
-			updateLevelUpBg();
-		}*/
-
 		draw();
 
 		fps_.endFrame();
@@ -340,7 +335,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 				level_++;
 				currentLevelScore_ = 0;
 				scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;
-				levelingUp_ = true;
+				levelingUp_ = true;				
 			}
 		}
 	}
@@ -352,6 +347,16 @@ void MainGame::updatelevelUpText(float deltaTime) {
 
 	static float stayedAtEndingPos = 0.0f;
 	static const float TO_STAY_AT_ENDING_POS = 120.0f;
+
+	// bg color
+	static Evolve::ColorRgba currentClearColor = CLEAR_COLOR;
+
+	static int currentBlue = currentClearColor.blue;	
+	
+	static const int MIN_BLUE = 200, MAX_BLUE = CLEAR_COLOR.blue;
+
+	static const int COLOR_CHANGE = 2;
+	static bool bgChanged = false;
 
 	if (gameState_ != GameState::PAUSE) {
 
@@ -368,6 +373,13 @@ void MainGame::updatelevelUpText(float deltaTime) {
 				}
 				else {
 					atEndingPos = true;
+				}
+
+				if (currentBlue > MIN_BLUE) {
+					currentBlue -= (int) (COLOR_CHANGE * deltaTime);
+
+					currentBlue = std::max(currentBlue, MIN_BLUE);
+					bgChanged = true;
 				}
 			}
 
@@ -395,19 +407,20 @@ void MainGame::updatelevelUpText(float deltaTime) {
 				goingDown = true;
 				levelingUp_ = false;
 			}
+
+			if (currentBlue < MAX_BLUE) {
+				currentBlue += (int) (COLOR_CHANGE * deltaTime);
+
+				currentBlue = std::min(currentBlue, MAX_BLUE);
+				bgChanged = true;
+			}
+		}
+
+		if (bgChanged) {
+			currentClearColor.blue = currentBlue;
+			window_.setClearColor(currentClearColor);
 		}
 	}
-}
-
-void MainGame::updateLevelUpBg() {
-	//static Evolve::ColorRgba currentClearColor = CLEAR_COLOR;
-	//static bool goingDown = true;
-
-	//if () {
-
-	//}
-
-	//window_.
 }
 
 void MainGame::updateGameOverText(float deltaTime) {
@@ -568,7 +581,7 @@ void MainGame::freeSnake() {
 	gui_.freeGui();
 	guiRenderer_.freeGuiRenderer();
 
-	viniqueFont16_.deleteFont();
+	//viniqueFont16_.deleteFont();
 	viniqueFont32_.deleteFont();
 	viniqueFont128_.deleteFont();
 

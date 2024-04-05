@@ -14,8 +14,8 @@ Food::~Food() {
 bool Food::init(Grid * grid) {
 	grid_ = grid;
 
-	getRandomX_ = std::uniform_int_distribution<size_t>(0, grid->getNumColumns() - 1);
-	getRandomY_ = std::uniform_int_distribution<size_t>(0, grid->getNumRows() - 1);
+	getRandomX_ = std::uniform_int_distribution<int>(0, grid->getNumColumns() - 1);
+	getRandomY_ = std::uniform_int_distribution<int>(0, grid->getNumRows() - 1);
 
 	getRandomFood_ = std::uniform_int_distribution<size_t>(0, 19);
 
@@ -44,28 +44,28 @@ bool Food::init(Grid * grid) {
 		loadTexture("resources/images/foods/tulip.png",					foodTextures_[index++]);
 	}
 
-	positionInGrid_.x = STARTING_X;
-	positionInGrid_.y = STARTING_Y;
+	positionInGrid_.X = STARTING_X;
+	positionInGrid_.Y = STARTING_Y;
 
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
+	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
 
 	return true;
 }
 
 void Food::restart() {
 	consumed_ = false;
-	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
+	grid_->clearCell(positionInGrid_.Y, positionInGrid_.X);
 
-	positionInGrid_.x = STARTING_X;
-	positionInGrid_.y = STARTING_Y;
+	positionInGrid_.X = STARTING_X;
+	positionInGrid_.Y = STARTING_Y;
 
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
+	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
 }
 
 void Food::draw(Evolve::TextureRenderer& renderer) const {
@@ -78,8 +78,8 @@ void Food::draw(Evolve::TextureRenderer& renderer) const {
 	renderer.draw(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
-			positionInGrid_.x * FOOD_SIZE,
-			positionInGrid_.y * FOOD_SIZE,
+			positionInGrid_.X * FOOD_SIZE,
+			positionInGrid_.Y * FOOD_SIZE,
 			fruitTextureSize, fruitTextureSize
 		),
 		uv,
@@ -92,10 +92,10 @@ void Food::reset() {
 	
 	consumed_ = false;
 
-	grid_->clearCell(positionInGrid_.y, positionInGrid_.x);
+	grid_->clearCell(positionInGrid_.Y, positionInGrid_.X);
 
-	size_t newX = getRandomX_(randomEngine_);
-	size_t newY = getRandomY_(randomEngine_);
+	int newX = getRandomX_(randomEngine_);
+	int newY = getRandomY_(randomEngine_);
 
 	while (true) {
 		newX = getRandomX_(randomEngine_);
@@ -106,11 +106,11 @@ void Food::reset() {
 		}
 	}
 
-	positionInGrid_.x = newX;
-	positionInGrid_.y = newY;
+	positionInGrid_.X = newX;
+	positionInGrid_.Y = newY;
 
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.y, positionInGrid_.x);
+	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
 }

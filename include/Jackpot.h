@@ -40,14 +40,14 @@ private:
 
 	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
 
-	std::vector<glm::ivec2> availablePositions_;
+	std::vector<Evolve::Position2D> availablePositions_;
 	size_t availablePositionIndex_ = 0;
 
-	std::uniform_int_distribution<int> getRandomPosition_;
-	std::uniform_int_distribution<int> getRandomJackpot_;
+	std::uniform_int_distribution<size_t> getRandomPosition_;
+	std::uniform_int_distribution<size_t> getRandomJackpot_;
 
 	Evolve::TextureData jackpotTextures_[5] {};
-	int currentJackpot_ = 0;
+	size_t currentJackpot_ = 0;
 
 	Evolve::TextureData timerTexture_;
 	Evolve::ColorRgba timerColors_[5] {};

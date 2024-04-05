@@ -24,7 +24,7 @@ protected:
 
 	bool consumed_ = false;
 
-	glm::ivec2 positionInGrid_ = glm::ivec2(0, 0);
+	Evolve::Position2D positionInGrid_ {};
 
 	static std::random_device seed_;
 	static std::mt19937 randomEngine_;

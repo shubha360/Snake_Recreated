@@ -18,9 +18,9 @@ bool Jackpot::init(Grid* grid) {
 	windowWidth_ = (int) grid_->getNumColumns() * Grid::CELL_SIZE;
 	windowHeight_ = (int) grid_->getNumRows() * Grid::CELL_SIZE;
 	
-	availablePositions_.resize((size_t)((grid_->getNumRows() - 3) - 2) * (grid_->getNumColumns() - 1));
+	availablePositions_.resize((size_t) ((grid_->getNumRows() - 3) - 2) * (grid_->getNumColumns() - 1));
 
-	getRandomJackpot_ = std::uniform_int_distribution<int>(0, 4);
+	getRandomJackpot_ = std::uniform_int_distribution<size_t>(0, 4);
 
 	{ // initializing jackpot and timer textures and colors
 		int index = 0;
@@ -54,8 +54,8 @@ void Jackpot::draw(Evolve::TextureRenderer& renderer) const {
 	renderer.draw(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
-			positionInGrid_.x * Grid::CELL_SIZE,
-			positionInGrid_.y * Grid::CELL_SIZE,
+			positionInGrid_.X * Grid::CELL_SIZE,
+			positionInGrid_.Y * Grid::CELL_SIZE,
 			JACKPOT_SIZE, JACKPOT_SIZE
 		),
 		uv,
@@ -90,7 +90,7 @@ void Jackpot::reset() {
 		timerRunning_ = false;
 		haveToReset_ = false;
 
-		grid_->clearCell(positionInGrid_.y, positionInGrid_.x, true);
+		grid_->clearCell(positionInGrid_.Y, positionInGrid_.X, true);
 	}
 }
 
@@ -104,28 +104,28 @@ void Jackpot::startJackpot(int level) {
 	currentTime_ = 0.0f;
 	timerRunning_ = true;
 
-	for (size_t row = 2; row < grid_->getNumRows() - 3; row++) {
-		for (size_t column = 0; column < grid_->getNumColumns() - 1; column++) {
+	for (int row = 2; row < grid_->getNumRows() - 3; row++) {
+		for (int column = 0; column < grid_->getNumColumns() - 1; column++) {
 			
 			if (grid_->isEmptyCell(row, column) &&
 				grid_->isEmptyCell(row, column + 1) &&
 				grid_->isEmptyCell(row + 1, column) &&
 				grid_->isEmptyCell(row + 1, column + 1)) {
 
-				availablePositions_[availablePositionIndex_].x = (int) column;
-				availablePositions_[availablePositionIndex_].y = (int) row;
+				availablePositions_[availablePositionIndex_].X = (int) column;
+				availablePositions_[availablePositionIndex_].Y = (int) row;
 				availablePositionIndex_++;
 			}
 		}
 	}
 
-	getRandomPosition_ = std::uniform_int_distribution<int>(0, (int) availablePositionIndex_ - 1);
+	getRandomPosition_ = std::uniform_int_distribution<size_t>(0, (int) availablePositionIndex_ - 1);
 
 	positionInGrid_ = availablePositions_[getRandomPosition_(randomEngine_)];
 
 	availablePositionIndex_ = 0;
 
-	grid_->addJackpotCells(positionInGrid_.y, positionInGrid_.x);
+	grid_->addJackpotCells(positionInGrid_.Y, positionInGrid_.X);
 
 	currentJackpot_ = getRandomJackpot_(randomEngine_);
 

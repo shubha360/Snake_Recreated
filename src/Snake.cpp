@@ -26,9 +26,9 @@ bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
 	createNewPart(SnakePart::TAIL, glm::ivec2(0, 10), SnakeDirection::RIGHT);*/
 
-	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
-	createNewPart(SnakePart::BODY, glm::ivec2(11, 10), SnakeDirection::RIGHT);
-	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
+	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
+	createNewPart(SnakePart::BODY, Evolve::Position2D { 11, 10 }, SnakeDirection::RIGHT);
+	createNewPart(SnakePart::TAIL, Evolve::Position2D { 10, 10 }, SnakeDirection::RIGHT);
 
 	Evolve::ImageLoader::LoadTextureFromImage("resources/images/body.png", bodyTexture_, 4);
 	Evolve::ImageLoader::BufferTextureData(bodyTexture_);
@@ -41,12 +41,12 @@ void Snake::restart() {
 
 	for (auto& part : snake_) {
 		
-		grid_->clearCell(part.currentPositionInGrid_.y, part.currentPositionInGrid_.x);
+		grid_->clearCell(part.currentPositionInGrid_.Y, part.currentPositionInGrid_.X);
 	}
 	
 	// the body parts don't move once the snake eats itself
 	// that's why no body part covers this cell but it remains occupied in the grid
-	grid_->clearCell(snake_[0].previousPositionInGrid_.y, snake_[0].previousPositionInGrid_.x);
+	grid_->clearCell(snake_[0].previousPositionInGrid_.Y, snake_[0].previousPositionInGrid_.X);
 
 	snake_.clear();
 
@@ -54,9 +54,9 @@ void Snake::restart() {
 	currentPartIndex_ = 0;
 	snake_.reserve(currentSnakeMaxSize_);
 
-	createNewPart(SnakePart::HEAD, glm::ivec2(12, 10), SnakeDirection::RIGHT);
-	createNewPart(SnakePart::BODY, glm::ivec2(11, 10), SnakeDirection::RIGHT);
-	createNewPart(SnakePart::TAIL, glm::ivec2(10, 10), SnakeDirection::RIGHT);
+	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
+	createNewPart(SnakePart::BODY, Evolve::Position2D { 11, 10 }, SnakeDirection::RIGHT);
+	createNewPart(SnakePart::TAIL, Evolve::Position2D { 10, 10 }, SnakeDirection::RIGHT);
 }
 
 // returns true if snake changed position in grid, otherwise false, 
@@ -77,13 +77,13 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 		switch (current.direction_) {
 
 		case SnakeDirection::RIGHT:
-			current.currentPositionInWorld_.x += (int)((SPEED + level - 1) * deltaTime);
+			current.currentPositionInWorld_.X += (int)((SPEED + level - 1) * deltaTime);
 
-			if (current.currentPositionInWorld_.x >= current.nextPositionInWorld_.x) {
+			if (current.currentPositionInWorld_.X >= current.nextPositionInWorld_.X) {
 				
 				positionChangedInGrid = true;
 				
-				current.currentPositionInWorld_.x = current.nextPositionInWorld_.x;
+				current.currentPositionInWorld_.X = current.nextPositionInWorld_.X;
 
 				current.previousPositionInGrid_ = current.currentPositionInGrid_;
 				current.currentPositionInGrid_ = current.nextPositionInGrid_;
@@ -96,23 +96,23 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 						pointHolder += POINT_LOOP;
 					}
 
-					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
+					current.currentPositionInWorld_.X = current.currentPositionInGrid_.X * BODY_SIZE;
 				}
 				
-				current.nextPositionInGrid_.x = current.currentPositionInGrid_.x + 1;
-				current.nextPositionInWorld_.x = current.nextPositionInGrid_.x * BODY_SIZE;
+				current.nextPositionInGrid_.X = current.currentPositionInGrid_.X + 1;
+				current.nextPositionInWorld_.X = current.nextPositionInGrid_.X * BODY_SIZE;
 			}
 
 			break;
 
 		case SnakeDirection::LEFT:
-			current.currentPositionInWorld_.x -= (int) ((SPEED + level - 1) * deltaTime);
+			current.currentPositionInWorld_.X -= (int) ((SPEED + level - 1) * deltaTime);
 
-			if (current.currentPositionInWorld_.x <= current.nextPositionInWorld_.x) {
+			if (current.currentPositionInWorld_.X <= current.nextPositionInWorld_.X) {
 				
 				positionChangedInGrid = true;
 
-				current.currentPositionInWorld_.x = current.nextPositionInWorld_.x;
+				current.currentPositionInWorld_.X = current.nextPositionInWorld_.X;
 
 				current.previousPositionInGrid_ = current.currentPositionInGrid_;
 				current.currentPositionInGrid_ = current.nextPositionInGrid_;
@@ -124,22 +124,22 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 						pointHolder += POINT_LOOP;
 					}
 
-					current.currentPositionInWorld_.x = current.currentPositionInGrid_.x * BODY_SIZE;
+					current.currentPositionInWorld_.X = current.currentPositionInGrid_.X * BODY_SIZE;
 				}
 
-				current.nextPositionInGrid_.x = current.currentPositionInGrid_.x - 1;
-				current.nextPositionInWorld_.x = current.nextPositionInGrid_.x * BODY_SIZE;
+				current.nextPositionInGrid_.X = current.currentPositionInGrid_.X - 1;
+				current.nextPositionInWorld_.X = current.nextPositionInGrid_.X * BODY_SIZE;
 			}
 			break;
 
 		case SnakeDirection::UP:
-			current.currentPositionInWorld_.y += (int) ((SPEED + level - 1) * deltaTime);
+			current.currentPositionInWorld_.Y += (int) ((SPEED + level - 1) * deltaTime);
 
-			if (current.currentPositionInWorld_.y >= current.nextPositionInWorld_.y) {
+			if (current.currentPositionInWorld_.Y >= current.nextPositionInWorld_.Y) {
 				
 				positionChangedInGrid = true;
 
-				current.currentPositionInWorld_.y = current.nextPositionInWorld_.y;
+				current.currentPositionInWorld_.Y = current.nextPositionInWorld_.Y;
 
 				current.previousPositionInGrid_ = current.currentPositionInGrid_;
 				current.currentPositionInGrid_ = current.nextPositionInGrid_;
@@ -151,22 +151,22 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 						pointHolder += POINT_LOOP;
 					}
 
-					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
+					current.currentPositionInWorld_.Y = current.currentPositionInGrid_.Y * BODY_SIZE;
 				}
 
-				current.nextPositionInGrid_.y = current.currentPositionInGrid_.y + 1;
-				current.nextPositionInWorld_.y = current.nextPositionInGrid_.y * BODY_SIZE;
+				current.nextPositionInGrid_.Y = current.currentPositionInGrid_.Y + 1;
+				current.nextPositionInWorld_.Y = current.nextPositionInGrid_.Y * BODY_SIZE;
 			}
 			break;
 
 		case SnakeDirection::DOWN:
-			current.currentPositionInWorld_.y -= (int) ((SPEED + level - 1) * deltaTime);
+			current.currentPositionInWorld_.Y -= (int) ((SPEED + level - 1) * deltaTime);
 
-			if (current.currentPositionInWorld_.y <= current.nextPositionInWorld_.y) {
+			if (current.currentPositionInWorld_.Y <= current.nextPositionInWorld_.Y) {
 				
 				positionChangedInGrid = true;
 
-				current.currentPositionInWorld_.y = current.nextPositionInWorld_.y;
+				current.currentPositionInWorld_.Y = current.nextPositionInWorld_.Y;
 
 				current.previousPositionInGrid_ = current.currentPositionInGrid_;
 				current.currentPositionInGrid_ = current.nextPositionInGrid_;
@@ -178,11 +178,11 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 						pointHolder += POINT_LOOP;
 					}
 
-					current.currentPositionInWorld_.y = current.currentPositionInGrid_.y * BODY_SIZE;
+					current.currentPositionInWorld_.Y = current.currentPositionInGrid_.Y * BODY_SIZE;
 				}
 
-				current.nextPositionInGrid_.y = current.currentPositionInGrid_.y - 1;
-				current.nextPositionInWorld_.y = current.nextPositionInGrid_.y * BODY_SIZE;
+				current.nextPositionInGrid_.Y = current.currentPositionInGrid_.Y - 1;
+				current.nextPositionInWorld_.Y = current.nextPositionInGrid_.Y * BODY_SIZE;
 			}
 			break;
 		}		
@@ -199,13 +199,13 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 			if (current.type_ == SnakePart::TAIL) {
 
-				grid_->clearCell(current.previousPositionInGrid_.y, current.previousPositionInGrid_.x);
+				grid_->clearCell(current.previousPositionInGrid_.Y, current.previousPositionInGrid_.X);
 
 				if (snake_.size() - 1 > i) { // have to add new part if true
 
 					auto& newTail = snake_[(size_t) i + 1];
 
-					if (current.previousPositionInGrid_ == newTail.currentPositionInGrid_) {
+					if (current.previousPositionInGrid_.isEqualTo(newTail.currentPositionInGrid_)) {
 
 						current.type_ = SnakePart::BODY;
 
@@ -214,7 +214,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 						SnakeBodyPart::SetNextPosition(newTail, grid_->getNumRows(), grid_->getNumColumns());
 
-						grid_->addSnakeCell(newTail.currentPositionInGrid_.y, newTail.currentPositionInGrid_.x);
+						grid_->addSnakeCell(newTail.currentPositionInGrid_.Y, newTail.currentPositionInGrid_.X);
 						
 						newTailAdded = true;
 					}
@@ -225,12 +225,12 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 			auto& currentRotation = current.rotations_[current.currentRotationIndex_];
 
 			if (currentRotation.rotateDirection_ != SnakeDirection::NONE &&
-				current.currentPositionInGrid_ == currentRotation.rotatePositionInGrid_) {
+				current.currentPositionInGrid_.isEqualTo(currentRotation.rotatePositionInGrid_)) {
 
 				current.direction_ = currentRotation.rotateDirection_;
 				currentRotation.rotateDirection_ = SnakeDirection::NONE;
 
-				current.currentRotationIndex_ = (current.currentRotationIndex_ + 1) % ((int) current.rotations_.size() - 1);
+				current.currentRotationIndex_ = (current.currentRotationIndex_ + 1) % SnakeBodyPart::MAX_ROTATIONS;
 
 				SnakeBodyPart::SetNextPosition(current, grid_->getNumRows(), grid_->getNumColumns());
 
@@ -244,7 +244,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 					next.rotations_[next.newRotationIndex_].rotateDirection_ = current.direction_;
 					next.rotations_[next.newRotationIndex_].rotatePositionInGrid_ = current.currentPositionInGrid_;
 
-					next.newRotationIndex_ = (next.newRotationIndex_ + 1) % ((int) next.rotations_.size() - 1);
+					next.newRotationIndex_ = (next.newRotationIndex_ + 1) % SnakeBodyPart::MAX_ROTATIONS;
 				}
 			}
 
@@ -254,16 +254,16 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 				bool ateSelf = false;
 
 				// ate itself
-				if (grid_->isSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
+				if (grid_->isSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {
 					ateSelf = true;
 				}
 				
 				// ate fruit
-				else if (grid_->isFruitCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
+				else if (grid_->isFruitCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {
 
 					createNewPart(
 						SnakePart::NONE,
-						glm::ivec2(current.currentPositionInGrid_.x, current.currentPositionInGrid_.y),
+						Evolve::Position2D { current.currentPositionInGrid_.X, current.currentPositionInGrid_.Y },
 						SnakeDirection::NONE
 					);
 
@@ -271,11 +271,11 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 				} 
 				
 				// ate jackpot
-				else if (grid_->isJackpotCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x)) {
+				else if (grid_->isJackpotCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {
 					
 					createNewPart(
 						SnakePart::NONE,
-						glm::ivec2(current.currentPositionInGrid_.x, current.currentPositionInGrid_.y),
+						Evolve::Position2D { current.currentPositionInGrid_.X, current.currentPositionInGrid_.Y },
 						SnakeDirection::NONE
 					);
 
@@ -283,7 +283,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 					jackpotConsumed_ = true;
 				}
 
-				grid_->addSnakeCell(current.currentPositionInGrid_.y, current.currentPositionInGrid_.x);
+				grid_->addSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X);
 
 				if (ateSelf) {
 					pointHolder = -1;
@@ -315,7 +315,7 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 			SnakeBodyPart::OffsetPosition(head.rotations_[head.newRotationIndex_].rotatePositionInGrid_, 
 				grid_->getNumRows(), grid_->getNumColumns());
 
-			head.newRotationIndex_ = (head.newRotationIndex_ + 1) % ((int) head.rotations_.size() - 1);
+			head.newRotationIndex_ = (head.newRotationIndex_ + 1) % SnakeBodyPart::MAX_ROTATIONS;
 		}
 		break;	
 
@@ -329,7 +329,7 @@ void Snake::changeDirection(const SnakeDirection newDirection) {
 			SnakeBodyPart::OffsetPosition(head.rotations_[head.newRotationIndex_].rotatePositionInGrid_,
 				grid_->getNumRows(), grid_->getNumColumns());
 
-			head.newRotationIndex_ = (head.newRotationIndex_ + 1) % ((int) head.rotations_.size() - 1);
+			head.newRotationIndex_ = (head.newRotationIndex_ + 1) % SnakeBodyPart::MAX_ROTATIONS;
 		}
 		break;
 	}
@@ -345,7 +345,7 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 	// jackpot consumption graphics
 	static int ALPHA_CHANGE = 10;
 	static int jackpotAlphaGoingDown = true;
-	static int currentBodyAlpha = BODY_COLOR.alpha;
+	static int currentBodyAlpha = BODY_COLOR.Alpha;
 
 	static int opaqueCount = 0;
 	static const int MAX_OPAQUES = 3;
@@ -375,7 +375,7 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 			}
 		}
 	
-		BODY_COLOR.alpha = currentBodyAlpha;
+		BODY_COLOR.Alpha = currentBodyAlpha;
 	}	
 
 	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
@@ -387,11 +387,11 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 		switch (current.direction_) {
 		case SnakeDirection::RIGHT:
 			
-			if (current.nextPositionInGrid_.x == grid_->getNumColumns()) {
+			if (current.nextPositionInGrid_.X == grid_->getNumColumns()) {
 				ghostDims.set(
 					Evolve::Origin::BOTTOM_LEFT,
-					current.currentPositionInWorld_.x - (int) grid_->getNumColumns() * Grid::CELL_SIZE,
-					current.currentPositionInWorld_.y,
+					current.currentPositionInWorld_.X - (int) grid_->getNumColumns() * Grid::CELL_SIZE,
+					current.currentPositionInWorld_.Y,
 					BODY_SIZE,
 					BODY_SIZE
 				);
@@ -400,11 +400,11 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 		case SnakeDirection::LEFT:
 
-			if (current.nextPositionInGrid_.x == -1) {
+			if (current.nextPositionInGrid_.X == -1) {
 				ghostDims.set(
 					Evolve::Origin::BOTTOM_LEFT,
-					current.currentPositionInWorld_.x + (int) grid_->getNumColumns() * Grid::CELL_SIZE,
-					current.currentPositionInWorld_.y,
+					current.currentPositionInWorld_.X + (int) grid_->getNumColumns() * Grid::CELL_SIZE,
+					current.currentPositionInWorld_.Y,
 					BODY_SIZE,
 					BODY_SIZE
 				);
@@ -413,11 +413,11 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 		case SnakeDirection::UP:
 
-			if (current.nextPositionInGrid_.y == grid_->getNumRows()) {
+			if (current.nextPositionInGrid_.Y == grid_->getNumRows()) {
 				ghostDims.set(
 					Evolve::Origin::BOTTOM_LEFT,
-					current.currentPositionInWorld_.x,
-					current.currentPositionInWorld_.y - (int) grid_->getNumRows() * Grid::CELL_SIZE,
+					current.currentPositionInWorld_.X,
+					current.currentPositionInWorld_.Y - (int) grid_->getNumRows() * Grid::CELL_SIZE,
 					BODY_SIZE,
 					BODY_SIZE
 				);
@@ -426,11 +426,11 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 		case SnakeDirection::DOWN:
 
-			if (current.nextPositionInGrid_.y == -1) {
+			if (current.nextPositionInGrid_.Y == -1) {
 				ghostDims.set(
 					Evolve::Origin::BOTTOM_LEFT,
-					current.currentPositionInWorld_.x,
-					current.currentPositionInWorld_.y + (int) grid_->getNumRows() * Grid::CELL_SIZE,
+					current.currentPositionInWorld_.X,
+					current.currentPositionInWorld_.Y + (int) grid_->getNumRows() * Grid::CELL_SIZE,
 					BODY_SIZE,
 					BODY_SIZE
 				);
@@ -440,8 +440,8 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 		Evolve::RectDimension dims(
 			Evolve::Origin::BOTTOM_LEFT,
-			current.currentPositionInWorld_.x,
-			current.currentPositionInWorld_.y,
+			current.currentPositionInWorld_.X,
+			current.currentPositionInWorld_.Y,
 			BODY_SIZE,
 			BODY_SIZE
 		);
@@ -455,12 +455,13 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 			// have to print rotation cell
 			if (current.rotations_[current.currentRotationIndex_].rotateDirection_ != SnakeDirection::NONE &&
-				current.nextPositionInGridOffset_ == current.rotations_[current.currentRotationIndex_].rotatePositionInGrid_) {
+				current.nextPositionInGridOffset_.isEqualTo
+				(current.rotations_[current.currentRotationIndex_].rotatePositionInGrid_)) {
 				
 				Evolve::RectDimension rotationDims(
 					Evolve::Origin::BOTTOM_LEFT,
-					current.nextPositionInGridOffset_.x * BODY_SIZE,
-					current.nextPositionInGridOffset_.y * BODY_SIZE,
+					current.nextPositionInGridOffset_.X * BODY_SIZE,
+					current.nextPositionInGridOffset_.Y * BODY_SIZE,
 					BODY_SIZE,
 					BODY_SIZE
 				);
@@ -473,7 +474,7 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 	}
 }
 
-void Snake::createNewPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction) {
+void Snake::createNewPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction) {
 	
 	snake_.emplace_back(type, positionInGrid, direction, grid_->getNumRows(), grid_->getNumColumns());
 	currentPartIndex_++;
@@ -483,10 +484,10 @@ void Snake::createNewPart(const SnakePart type, const glm::ivec2& positionInGrid
 		snake_.reserve(currentSnakeMaxSize_);
 	}
 
-	grid_->addSnakeCell(positionInGrid.y, positionInGrid.x);
+	grid_->addSnakeCell(positionInGrid.Y, positionInGrid.X);
 }
 
-SnakeBodyPart::SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction,
+SnakeBodyPart::SnakeBodyPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction,
 	const size_t numRows, const size_t numColumns) {
 
 	type_ = type;
@@ -494,29 +495,27 @@ SnakeBodyPart::SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInG
 
 	currentPositionInGrid_ = positionInGrid;
 
-	currentPositionInWorld_.x = currentPositionInGrid_.x * Snake::BODY_SIZE;
-	currentPositionInWorld_.y = currentPositionInGrid_.y * Snake::BODY_SIZE;
+	currentPositionInWorld_.X = currentPositionInGrid_.X * Snake::BODY_SIZE;
+	currentPositionInWorld_.Y = currentPositionInGrid_.Y * Snake::BODY_SIZE;
 
 	SetNextPosition(*this, numRows, numColumns);
-
-	rotations_.resize(4);
 }
 
-bool SnakeBodyPart::OffsetPosition(glm::ivec2& position, size_t numRows, size_t numColumns) {
-	if (position.x == -1) {
-		position.x = (int) numColumns - 1;
+bool SnakeBodyPart::OffsetPosition(Evolve::Position2D& position, size_t numRows, size_t numColumns) {
+	if (position.X == -1) {
+		position.X = (int) numColumns - 1;
 		return true;
 	}
-	else if (position.x == numColumns) {
-		position.x = 0;
+	else if (position.X == numColumns) {
+		position.X = 0;
 		return true;
 	}
-	else if (position.y == -1) {
-		position.y = (int) numRows - 1;
+	else if (position.Y == -1) {
+		position.Y = (int) numRows - 1;
 		return true;
 	}
-	else if (position.y == numRows) {
-		position.y = 0;
+	else if (position.Y == numRows) {
+		position.Y = 0;
 		return true;
 	}
 	return false;
@@ -527,28 +526,28 @@ void SnakeBodyPart::SetNextPosition(SnakeBodyPart& part, size_t numRows, size_t 
 	switch (part.direction_) {
 
 	case SnakeDirection::RIGHT:
-		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x + 1;
-		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y;
+		part.nextPositionInGrid_.X = part.currentPositionInGrid_.X + 1;
+		part.nextPositionInGrid_.Y = part.currentPositionInGrid_.Y;
 		break;
 
 	case SnakeDirection::LEFT:
-		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x - 1;
-		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y;
+		part.nextPositionInGrid_.X = part.currentPositionInGrid_.X - 1;
+		part.nextPositionInGrid_.Y = part.currentPositionInGrid_.Y;
 		break;
 
 	case SnakeDirection::UP:
-		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x;
-		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y + 1;
+		part.nextPositionInGrid_.X = part.currentPositionInGrid_.X;
+		part.nextPositionInGrid_.Y = part.currentPositionInGrid_.Y + 1;
 		break;
 
 	case SnakeDirection::DOWN:
-		part.nextPositionInGrid_.x = part.currentPositionInGrid_.x;
-		part.nextPositionInGrid_.y = part.currentPositionInGrid_.y - 1;
+		part.nextPositionInGrid_.X = part.currentPositionInGrid_.X;
+		part.nextPositionInGrid_.Y = part.currentPositionInGrid_.Y - 1;
 		break;
 	}
 
-	part.nextPositionInWorld_.x = part.nextPositionInGrid_.x * Snake::BODY_SIZE;
-	part.nextPositionInWorld_.y = part.nextPositionInGrid_.y * Snake::BODY_SIZE;
+	part.nextPositionInWorld_.X = part.nextPositionInGrid_.X * Snake::BODY_SIZE;
+	part.nextPositionInWorld_.Y = part.nextPositionInGrid_.Y * Snake::BODY_SIZE;
 
 	part.nextPositionInGridOffset_ = part.nextPositionInGrid_;
 	OffsetPosition(part.nextPositionInGridOffset_, numRows, numColumns);

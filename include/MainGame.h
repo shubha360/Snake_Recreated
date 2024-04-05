@@ -32,7 +32,7 @@ private:
 	const float MAX_FPS = 60.0f;
 	const Evolve::ColorRgba CLEAR_COLOR { 222, 255, 242, 255 };
 	GameState gameState_ = GameState::MAIN_MENU;
-	unsigned int windowWidth_ = 0, windowHeight_ = 0;
+	Evolve::Size2D windowSize_ {};
 
 	Evolve::Window window_;
 	Evolve::Camera camera_;
@@ -64,14 +64,14 @@ private:
 	int movintTextEndingY_ = 0, movingTextStartingY_ = 0;
 
 	size_t gui_levelUpText_ = -1;
-	glm::ivec2 levelUpTextPos_ {};
+	Evolve::Position2D levelUpTextPos_ {};
 
 	bool levelingUp_ = false;
 
 	void updatelevelUpText(float deltaTime);
 
 	size_t gui_gameOverText_ = -1;
-	glm::ivec2 gameOverTextPos_ {};
+	Evolve::Position2D gameOverTextPos_ {};
 
 	bool gameOverUpdateNeeded_ = false;
 

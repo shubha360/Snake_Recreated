@@ -16,8 +16,8 @@ void MainGame::run() {
 
 bool MainGame::initEngineComps() {
 	return
-		window_.init(true, 1720, 960, CLEAR_COLOR) &&
-		camera_.init(window_.getWindowWidth(), window_.getWindowHeight()) &&
+		window_.init("Snake", false, 1720, 960, CLEAR_COLOR) &&
+		camera_.init(Evolve::Size2D { window_.getWindowWidth(), window_.getWindowHeight() }) &&
 		fps_.init(MAX_FPS) &&
 		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
 		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
@@ -27,10 +27,9 @@ bool MainGame::initEngineComps() {
 }
 
 bool MainGame::initGame() {
-	windowWidth_ = window_.getWindowWidth();
-	windowHeight_ = window_.getWindowHeight();
+	windowSize_.set(window_.getWindowWidth(), window_.getWindowHeight());
 
-	grid_.init(windowWidth_, windowHeight_);
+	grid_.init(windowSize_);
 	
 	food_.init(&grid_);
 	
@@ -49,7 +48,7 @@ void MainGame::initGuiComponents() {
 	//guiFont_vinique16_ = gui_.addFont(viniqueFont16_);
 
 	Evolve::ColorRgba greyColor { 50, 50, 50, 255 };
-	Evolve::ColorRgba bgColor { CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 255 };
+	Evolve::ColorRgba bgColor { CLEAR_COLOR.Red, CLEAR_COLOR.Green, CLEAR_COLOR.Blue, 255 };
 	Evolve::ColorRgba transparentColor { 0, 0, 0, 0 };
 
 	int topMargin = 10, horizontalMargin = 20;
@@ -60,7 +59,7 @@ void MainGame::initGuiComponents() {
 		guiFont_vinique32_,
 		1.0f,
 		greyColor,
-		glm::ivec2(horizontalMargin, windowHeight_ - topMargin)
+		Evolve::Position2D { horizontalMargin, (GLint) windowSize_.Height - topMargin }		
 	);
 
 	gui_.hideComponent(gui_scoreText_);
@@ -70,7 +69,7 @@ void MainGame::initGuiComponents() {
 	std::string quitText = "Quit";
 
 	Evolve::RectDimension quitButtonDims(Evolve::Origin::TOP_RIGHT,
-		windowWidth_ - horizontalMargin, windowHeight_ - topMargin,
+		(GLint) windowSize_.Width - horizontalMargin, (GLint) windowSize_.Height - topMargin,
 		viniqueFont32_.getLineWidth(quitText), viniqueFont32_.getLineHeight());
 
 	gui_quitButton_ = gui_.addTextButton(
@@ -103,15 +102,18 @@ void MainGame::initGuiComponents() {
 	gui_bgPanel_ = gui_.addPanel(
 		Evolve::RectDimension(
 			Evolve::Origin::BOTTOM_LEFT,
-			0, 0, windowWidth_, windowHeight_
+			0, 0, (GLint) windowSize_.Width, (GLint) windowSize_.Height
 		),
-		Evolve::ColorRgba{ CLEAR_COLOR.red, CLEAR_COLOR.green, CLEAR_COLOR.blue, 200 }
+		Evolve::ColorRgba{ CLEAR_COLOR.Red, CLEAR_COLOR.Green, CLEAR_COLOR.Blue, 200 }
 	);
 
 	// start menu
 	std::string snakeText = "SNAKE";
 
-	glm::ivec2 snakePos{ windowWidth_ / 2 - viniqueFont128_.getLineWidth(snakeText) / 2, windowHeight_ / 5 * 4 };
+	Evolve::Position2D snakePos { 
+		(GLint) (windowSize_.Width / 2 - viniqueFont128_.getLineWidth(snakeText) / 2),
+		(GLint) windowSize_.Height / 5 * 4 
+	};
 
 	gui_snakeText_ = gui_.addPlainText(
 		snakeText,
@@ -121,7 +123,7 @@ void MainGame::initGuiComponents() {
 		snakePos
 	);
 
-	Evolve::RectDimension startButtonDims(Evolve::Origin::CENTER, windowWidth_ / 2, snakePos.y - 350, 300, 64);
+	Evolve::RectDimension startButtonDims(Evolve::Origin::CENTER, (GLint) windowSize_.Width / 2, snakePos.Y - 350, 300, 64);
 
 	gui_startButton_ = gui_.addTextButton(
 		"Start",
@@ -146,7 +148,10 @@ void MainGame::initGuiComponents() {
 	// pause
 	std::string pauseText = "PAUSED";
 
-	glm::ivec2 pauseTextPos { windowWidth_ / 2 - viniqueFont128_.getLineWidth(pauseText) / 2, windowHeight_ / 4 * 3 };
+	Evolve::Position2D pauseTextPos { 
+		(GLint) (windowSize_.Width / 2 - viniqueFont128_.getLineWidth(pauseText) / 2),
+		(GLint) windowSize_.Height / 4 * 3
+	};
 
 	gui_pauseText_ = gui_.addBlinkingText(
 		pauseText,
@@ -159,13 +164,13 @@ void MainGame::initGuiComponents() {
 	gui_.hideComponent(gui_pauseText_);
 
 	// moving texts at top
-	movingTextStartingY_ = windowHeight_ + viniqueFont32_.getLineHeight();
-	movintTextEndingY_ = windowHeight_ - topMargin;
+	movingTextStartingY_ = (GLint) windowSize_.Height + viniqueFont32_.getLineHeight();
+	movintTextEndingY_ = (GLint) windowSize_.Height - topMargin;
 
 	std::string gameOverText = "Game over!";
 
-	gameOverTextPos_.x = windowWidth_ / 2 - viniqueFont32_.getLineWidth(gameOverText) / 2;
-	gameOverTextPos_.y = movingTextStartingY_;
+	gameOverTextPos_.X = (GLint) windowSize_.Width / 2 - viniqueFont32_.getLineWidth(gameOverText) / 2;
+	gameOverTextPos_.Y = movingTextStartingY_;
 
 	gui_gameOverText_ = gui_.addPlainText(
 		gameOverText,
@@ -179,8 +184,8 @@ void MainGame::initGuiComponents() {
 
 	std::string levelUpText = "Level up!";
 
-	levelUpTextPos_.x = windowWidth_ / 2 - viniqueFont32_.getLineWidth(levelUpText) / 2;
-	levelUpTextPos_.y = movingTextStartingY_;
+	levelUpTextPos_.X = (GLint) windowSize_.Width / 2 - viniqueFont32_.getLineWidth(levelUpText) / 2;
+	levelUpTextPos_.Y = movingTextStartingY_;
 
 	gui_levelUpText_ = gui_.addPlainText(
 		levelUpText,
@@ -219,9 +224,9 @@ void MainGame::gameLoop() {
 
 float MainGame::runGameSimulations(float previousTicks) {
 	static const float MS_PER_SECOND = 1000.0f;
-	static const float DESIRED_Fps = 60.0f;
+	static const float DESIRed_Fps = 60.0f;
 
-	static const float DESIRED_FRAMETIME = MS_PER_SECOND / DESIRED_Fps;
+	static const float DESIRed_FRAMETIME = MS_PER_SECOND / DESIRed_Fps;
 
 	static const int MAX_PHYSICS_SIMS = 6;
 	static const float MAX_DELTA_TIME = 1.0f;
@@ -229,7 +234,7 @@ float MainGame::runGameSimulations(float previousTicks) {
 	float newTicks = (float)SDL_GetTicks();
 	float frameTime = newTicks - previousTicks;
 
-	float totalDeltaTime = frameTime / DESIRED_FRAMETIME;
+	float totalDeltaTime = frameTime / DESIRed_FRAMETIME;
 
 	bool inputProcessed = false;
 
@@ -351,9 +356,9 @@ void MainGame::updatelevelUpText(float deltaTime) {
 	// bg color
 	static Evolve::ColorRgba currentClearColor = CLEAR_COLOR;
 
-	static int currentBlue = currentClearColor.blue;	
+	static int currentBlue = currentClearColor.Blue;	
 	
-	static const int MIN_BLUE = 200, MAX_BLUE = CLEAR_COLOR.blue;
+	static const int MIN_Blue = 200, MAX_Blue = CLEAR_COLOR.Blue;
 
 	static const int COLOR_CHANGE = 2;
 	static bool bgChanged = false;
@@ -367,18 +372,18 @@ void MainGame::updatelevelUpText(float deltaTime) {
 					gui_.showComponent(gui_levelUpText_);
 				}
 
-				if (levelUpTextPos_.y > movintTextEndingY_) {
-					levelUpTextPos_.y -= (int) (2.0f * deltaTime);
+				if (levelUpTextPos_.Y > movintTextEndingY_) {
+					levelUpTextPos_.Y -= (int) (2.0f * deltaTime);
 					gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
 				}
 				else {
 					atEndingPos = true;
 				}
 
-				if (currentBlue > MIN_BLUE) {
+				if (currentBlue > MIN_Blue) {
 					currentBlue -= (int) (COLOR_CHANGE * deltaTime);
 
-					currentBlue = std::max(currentBlue, MIN_BLUE);
+					currentBlue = std::max(currentBlue, MIN_Blue);
 					bgChanged = true;
 				}
 			}
@@ -398,8 +403,8 @@ void MainGame::updatelevelUpText(float deltaTime) {
 			}
 		}
 		else {
-			if (levelUpTextPos_.y < movingTextStartingY_) {
-				levelUpTextPos_.y += (int) (2.0f * deltaTime);
+			if (levelUpTextPos_.Y < movingTextStartingY_) {
+				levelUpTextPos_.Y += (int) (2.0f * deltaTime);
 				gui_.setComponentPosition(gui_levelUpText_, levelUpTextPos_);
 			}
 			else {
@@ -408,16 +413,16 @@ void MainGame::updatelevelUpText(float deltaTime) {
 				levelingUp_ = false;
 			}
 
-			if (currentBlue < MAX_BLUE) {
+			if (currentBlue < MAX_Blue) {
 				currentBlue += (int) (COLOR_CHANGE * deltaTime);
 
-				currentBlue = std::min(currentBlue, MAX_BLUE);
+				currentBlue = std::min(currentBlue, MAX_Blue);
 				bgChanged = true;
 			}
 		}
 
 		if (bgChanged) {
-			currentClearColor.blue = currentBlue;
+			currentClearColor.Blue = currentBlue;
 			window_.setClearColor(currentClearColor);
 		}
 	}
@@ -436,8 +441,8 @@ void MainGame::updateGameOverText(float deltaTime) {
 			gui_.showComponent(gui_gameOverText_);
 		}
 
-		if (gameOverTextPos_.y > movintTextEndingY_) {
-			gameOverTextPos_.y -= (int) (2.0f * deltaTime);
+		if (gameOverTextPos_.Y > movintTextEndingY_) {
+			gameOverTextPos_.Y -= (int) (2.0f * deltaTime);
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}
 		else {
@@ -445,8 +450,8 @@ void MainGame::updateGameOverText(float deltaTime) {
 		}
 	}
 	else {
-		if (gameOverTextPos_.y < movingTextStartingY_) {
-			gameOverTextPos_.y += (int) (2.0f * deltaTime);
+		if (gameOverTextPos_.Y < movingTextStartingY_) {
+			gameOverTextPos_.Y += (int) (2.0f * deltaTime);
 			gui_.setComponentPosition(gui_gameOverText_, gameOverTextPos_);
 		}
 		else {

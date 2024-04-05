@@ -20,33 +20,34 @@ enum class SnakePart {
 class SnakeBodyPart {
 public:
 	struct Rotation {
-		glm::ivec2 rotatePositionInGrid_ = glm::ivec2(0);
+		Evolve::Position2D rotatePositionInGrid_ {};
 		SnakeDirection rotateDirection_ = SnakeDirection::NONE;
 	};
 
-	SnakeBodyPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction, 
+	SnakeBodyPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction, 
 		const size_t numRows, const size_t numCollumns);
 
 	SnakePart type_;
 	
-	// in glm::ivec2, x represents the horizontal position and y represents the vertical position
+	// in Evolve::Position2D, x represents the horizontal position and y represents the vertical position
 
-	glm::ivec2 previousPositionInGrid_ {};
+	Evolve::Position2D previousPositionInGrid_ {};
 
-	glm::ivec2 currentPositionInGrid_;
-	glm::ivec2 currentPositionInWorld_;
+	Evolve::Position2D currentPositionInGrid_;
+	Evolve::Position2D currentPositionInWorld_;
 
-	glm::ivec2 nextPositionInGrid_;
-	glm::ivec2 nextPositionInWorld_;
+	Evolve::Position2D nextPositionInGrid_;
+	Evolve::Position2D nextPositionInWorld_;
 
-	glm::ivec2 nextPositionInGridOffset_;
+	Evolve::Position2D nextPositionInGridOffset_;
 
 	SnakeDirection direction_;
 
-	std::vector<Rotation> rotations_;
+	static const int MAX_ROTATIONS = 4;
+	Rotation rotations_[MAX_ROTATIONS];
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
 
-	static bool OffsetPosition(glm::ivec2& position, size_t numRows, size_t numColumns);
+	static bool OffsetPosition(Evolve::Position2D& position, size_t numRows, size_t numColumns);
 	
 	static void SetNextPosition(SnakeBodyPart& part, size_t numRows, size_t numColumns);
 };
@@ -95,5 +96,5 @@ private:
 
 	bool jackpotConsumed_ = false;
 
-	void createNewPart(const SnakePart type, const glm::ivec2& positionInGrid, const SnakeDirection direction);
+	void createNewPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction);
 };

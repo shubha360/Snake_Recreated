@@ -11,7 +11,7 @@ Snake::~Snake() {
 
 bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
-	snake_.reserve(currentSnakeMaxSize_);
+	snake_.reserve(SNAKE_RESERVE_SIZE);
 
 	grid_ = grid;
 	food_ = food;
@@ -49,10 +49,7 @@ void Snake::restart() {
 	grid_->clearCell(snake_[0].previousPositionInGrid_.Y, snake_[0].previousPositionInGrid_.X);
 
 	snake_.clear();
-
-	currentSnakeMaxSize_ = startingSnakeReserveSize_;
-	currentPartIndex_ = 0;
-	snake_.reserve(currentSnakeMaxSize_);
+	snake_.reserve(SNAKE_RESERVE_SIZE);
 
 	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
 	createNewPart(SnakePart::BODY, Evolve::Position2D { 11, 10 }, SnakeDirection::RIGHT);
@@ -283,6 +280,9 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 					jackpotConsumed_ = true;
 				}
 
+				// it is possible that the vector of body parts was reallocated
+				current = snake_[i];
+
 				grid_->addSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X);
 
 				if (ateSelf) {
@@ -477,12 +477,6 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 void Snake::createNewPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction) {
 	
 	snake_.emplace_back(type, positionInGrid, direction, grid_->getNumRows(), grid_->getNumColumns());
-	currentPartIndex_++;
-
-	if (currentPartIndex_ == currentSnakeMaxSize_) {
-		currentSnakeMaxSize_ *= 2;
-		snake_.reserve(currentSnakeMaxSize_);
-	}
 
 	grid_->addSnakeCell(positionInGrid.Y, positionInGrid.X);
 }

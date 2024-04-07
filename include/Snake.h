@@ -89,10 +89,8 @@ private:
 	Jackpot* jackpot_ = nullptr;
 
 	std::vector<SnakeBodyPart> snake_;
-	
-	const size_t startingSnakeReserveSize_ = 128;
-	size_t currentSnakeMaxSize_ = startingSnakeReserveSize_;
-	size_t currentPartIndex_ = 0;
+
+	const int SNAKE_RESERVE_SIZE = 128;
 
 	bool jackpotConsumed_ = false;
 

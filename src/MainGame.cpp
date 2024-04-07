@@ -65,8 +65,8 @@ void MainGame::initGuiComponents() {
 	gui_.hideComponent(gui_scoreText_);
 
 	// restart and quit buttons
-	std::string restartText = "Restart";
-	std::string quitText = "Quit";
+	const char* restartText = "Restart";
+	const char* quitText = "Quit";
 
 	Evolve::RectDimension quitButtonDims(Evolve::Origin::TOP_RIGHT,
 		(GLint) windowSize_.Width - horizontalMargin, (GLint) windowSize_.Height - topMargin,
@@ -108,7 +108,7 @@ void MainGame::initGuiComponents() {
 	);
 
 	// start menu
-	std::string snakeText = "SNAKE";
+	const char* snakeText = "SNAKE";
 
 	Evolve::Position2D snakePos { 
 		(GLint) (windowSize_.Width / 2 - viniqueFont128_.getLineWidth(snakeText) / 2),
@@ -146,7 +146,7 @@ void MainGame::initGuiComponents() {
 	);
 
 	// pause
-	std::string pauseText = "PAUSED";
+	const char* pauseText = "PAUSED";
 
 	Evolve::Position2D pauseTextPos { 
 		(GLint) (windowSize_.Width / 2 - viniqueFont128_.getLineWidth(pauseText) / 2),
@@ -167,7 +167,7 @@ void MainGame::initGuiComponents() {
 	movingTextStartingY_ = (GLint) windowSize_.Height + viniqueFont32_.getLineHeight();
 	movintTextEndingY_ = (GLint) windowSize_.Height - topMargin;
 
-	std::string gameOverText = "Game over!";
+	const char* gameOverText = "Game over!";
 
 	gameOverTextPos_.X = (GLint) windowSize_.Width / 2 - viniqueFont32_.getLineWidth(gameOverText) / 2;
 	gameOverTextPos_.Y = movingTextStartingY_;
@@ -182,7 +182,7 @@ void MainGame::initGuiComponents() {
 
 	gui_.hideComponent(gui_gameOverText_);
 
-	std::string levelUpText = "Level up!";
+	const char* levelUpText = "Level up!";
 
 	levelUpTextPos_.X = (GLint) windowSize_.Width / 2 - viniqueFont32_.getLineWidth(levelUpText) / 2;
 	levelUpTextPos_.Y = movingTextStartingY_;
@@ -561,7 +561,7 @@ void MainGame::draw() {
 	std::string scoreText = "Level: " + std::to_string(level_) + "\n" +
 		"Score: " + std::to_string(score_);
 
-	gui_.setComponentLabel(gui_scoreText_, scoreText);
+	gui_.setComponentLabel(gui_scoreText_, scoreText.c_str());
 
 	guiRenderer_.renderGui(gui_, camera_);
 

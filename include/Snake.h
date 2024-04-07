@@ -90,7 +90,7 @@ private:
 
 	std::vector<SnakeBodyPart> snake_;
 
-	const int SNAKE_RESERVE_SIZE = 128;
+	//const int SNAKE_RESERVE_SIZE = 4;
 
 	bool jackpotConsumed_ = false;
 

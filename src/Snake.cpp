@@ -11,7 +11,7 @@ Snake::~Snake() {
 
 bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
-	snake_.reserve(SNAKE_RESERVE_SIZE);
+	//snake_.reserve(SNAKE_RESERVE_SIZE);
 
 	grid_ = grid;
 	food_ = food;
@@ -49,7 +49,7 @@ void Snake::restart() {
 	grid_->clearCell(snake_[0].previousPositionInGrid_.Y, snake_[0].previousPositionInGrid_.X);
 
 	snake_.clear();
-	snake_.reserve(SNAKE_RESERVE_SIZE);
+	//snake_.reserve(SNAKE_RESERVE_SIZE);
 
 	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
 	createNewPart(SnakePart::BODY, Evolve::Position2D { 11, 10 }, SnakeDirection::RIGHT);
@@ -281,7 +281,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 				}
 
 				// it is possible that the vector of body parts was reallocated
-				current = snake_[i];
+				/*current = snake_[i];*/
 
 				grid_->addSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X);
 

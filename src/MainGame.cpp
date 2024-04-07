@@ -15,15 +15,18 @@ void MainGame::run() {
 }
 
 bool MainGame::initEngineComps() {
+
+	std::string assetsPath = "../Evolve-Engine/engine-assets";
+
 	return
 		window_.init("Snake", false, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(Evolve::Size2D { window_.getWindowWidth(), window_.getWindowHeight() }) &&
 		fps_.init(MAX_FPS) &&
-		textureRenderer_.init("../Evolve-Engine/engine-assets") &&
+		textureRenderer_.init(assetsPath) &&
 		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
 		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&		
 		gui_.init() &&
-		guiRenderer_.init("../Evolve-Engine/engine-assets");
+		guiRenderer_.init(assetsPath);
 }
 
 bool MainGame::initGame() {

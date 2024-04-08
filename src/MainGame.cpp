@@ -301,9 +301,17 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 	if (snake_.move(deltaTime, level_, points)) {
 		
-		if (points == -1) {
+		if (points == -1 || points == -2) {
 			gameState_ = GameState::GAME_OVER;
 			gameOverUpdateNeeded_ = true;
+
+			if (points == -2) {
+				const char* newText = "You've reached the maximum snake size!";
+
+				gameOverTextPos_.X = (GLint) (windowSize_.Width / 2 - viniqueFont32_.getLineWidth(newText) / 2);
+
+				gui_.setComponentLabel(gui_gameOverText_, newText);
+			}
 		}
 		else {
 			score_ += points;

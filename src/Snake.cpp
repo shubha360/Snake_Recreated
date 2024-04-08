@@ -286,8 +286,9 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 				if (ateSelf) {
 					pointHolder = -1;
-
-					printf("\n\nSnake Size: %d\n\n", totalParts_);
+				}
+				else if (maxCapacityReached_) {
+					pointHolder = -2;
 				}
 			}
 
@@ -489,6 +490,10 @@ void Snake::createNewPart(const SnakePart type, const Evolve::Position2D& positi
 	grid_->addSnakeCell(positionInGrid.Y, positionInGrid.X);
 
 	totalParts_++;
+
+	if (totalParts_ == SNAKE_MAX_CAPACITY) {
+		maxCapacityReached_ = true;
+	}
 }
 
 SnakeBodyPart::SnakeBodyPart() {}

@@ -53,7 +53,7 @@ void Grid::addSnakeCell(const int row, const int column) {
     grid_[row][column] = SNAKE_SIGN;
 }
 
-void Grid::addFruitCell(const int row, const int column) {
+void Grid::addFoodCell(const int row, const int column) {
     grid_[row][column] = FRUIT_SIGN;
 }
 
@@ -82,7 +82,7 @@ bool Grid::isSnakeCell(const int row, const int column) const {
     return grid_[row][column] == SNAKE_SIGN;
 }
 
-bool Grid::isFruitCell(const int row, const int column) const {
+bool Grid::isFoodCell(const int row, const int column) const {
     return grid_[row][column] == FRUIT_SIGN;
 }
 

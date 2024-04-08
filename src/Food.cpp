@@ -50,7 +50,7 @@ bool Food::init(Grid * grid) {
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
+	grid_->addFoodCell(positionInGrid_.Y, positionInGrid_.X);
 
 	return true;
 }
@@ -65,7 +65,7 @@ void Food::restart() {
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
+	grid_->addFoodCell(positionInGrid_.Y, positionInGrid_.X);
 }
 
 void Food::draw(Evolve::TextureRenderer& renderer) const {
@@ -112,5 +112,5 @@ void Food::reset() {
 	currentFoodIndex_ = getRandomFood_(randomEngine_);
 	//currentFoodIndex_ = 0;
 
-	grid_->addFruitCell(positionInGrid_.Y, positionInGrid_.X);
+	grid_->addFoodCell(positionInGrid_.Y, positionInGrid_.X);
 }

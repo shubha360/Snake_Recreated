@@ -23,8 +23,8 @@ bool MainGame::initEngineComps() {
 		camera_.init(Evolve::Size2D { window_.getWindowWidth(), window_.getWindowHeight() }) &&
 		fps_.init(MAX_FPS) &&
 		textureRenderer_.init(assetsPath) &&
-		viniqueFont32_.initFromFontFile("Sunshine 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
-		viniqueFont128_.initFromFontFile("Sunshine 128", "resources/fonts/vinque.rg-regular.otf", 128) &&		
+		viniqueFont32_.initFromFontFile("Vinque 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
+		viniqueFont128_.initFromFontFile("Vinque 128", "resources/fonts/vinque.rg-regular.otf", 128) &&		
 		gui_.init() &&
 		guiRenderer_.init(assetsPath);
 }

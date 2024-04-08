@@ -24,27 +24,29 @@ public:
 		SnakeDirection rotateDirection_ = SnakeDirection::NONE;
 	};
 
+	SnakeBodyPart();
+
 	SnakeBodyPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction, 
 		const size_t numRows, const size_t numCollumns);
 
-	SnakePart type_;
+	SnakePart type_ = SnakePart::NONE;
 	
 	// in Evolve::Position2D, x represents the horizontal position and y represents the vertical position
 
 	Evolve::Position2D previousPositionInGrid_ {};
 
-	Evolve::Position2D currentPositionInGrid_;
-	Evolve::Position2D currentPositionInWorld_;
+	Evolve::Position2D currentPositionInGrid_ {};
+	Evolve::Position2D currentPositionInWorld_ {};
 
-	Evolve::Position2D nextPositionInGrid_;
-	Evolve::Position2D nextPositionInWorld_;
+	Evolve::Position2D nextPositionInGrid_ {};
+	Evolve::Position2D nextPositionInWorld_ {};
 
-	Evolve::Position2D nextPositionInGridOffset_;
+	Evolve::Position2D nextPositionInGridOffset_ {};
 
-	SnakeDirection direction_;
+	SnakeDirection direction_ = SnakeDirection::NONE;
 
 	static const int MAX_ROTATIONS = 4;
-	Rotation rotations_[MAX_ROTATIONS];
+	Rotation rotations_[MAX_ROTATIONS] {};
 	int currentRotationIndex_ = 0, newRotationIndex_ = 0;
 
 	static bool OffsetPosition(Evolve::Position2D& position, size_t numRows, size_t numColumns);
@@ -90,7 +92,9 @@ private:
 
 	std::vector<SnakeBodyPart> snake_;
 
-	//const int SNAKE_RESERVE_SIZE = 4;
+	const int SNAKE_MAX_CAPACITY = 256;
+	int totalParts_ = 0;
+	bool maxCapacityReached_ = false;
 
 	bool jackpotConsumed_ = false;
 

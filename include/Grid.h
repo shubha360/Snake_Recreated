@@ -23,14 +23,14 @@ public:
 	//void printGrid(Evolve::TextureRenderer& renderer);
 
 	void addSnakeCell(const int row, const int column);
-	void addFruitCell(const int row, const int column);
+	void addFoodCell(const int row, const int column);
 	void addJackpotCells(const int row, const int column);
 
 	void clearCell(const int row, const int column, bool isJackpot = false);
 
 	bool isEmptyCell(const int row, const int column) const;
 	bool isSnakeCell(const int row, const int column) const;
-	bool isFruitCell(const int row, const int column) const;
+	bool isFoodCell(const int row, const int column) const;
 	bool isJackpotCell(const int row, const int column) const;
 
 	inline int getNumRows() const { return numRows_; }

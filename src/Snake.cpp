@@ -11,12 +11,11 @@ Snake::~Snake() {
 
 bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
-	//snake_.reserve(SNAKE_RESERVE_SIZE);
+	snake_.resize(SNAKE_MAX_CAPACITY);
 
 	grid_ = grid;
 	food_ = food;
 	jackpot_ = jackpot;
-
 
 	/*createNewPart(SnakePart::HEAD, glm::ivec2(40, 10), SnakeDirection::RIGHT);
 
@@ -39,9 +38,9 @@ bool Snake::init(Grid* grid, Food* food, Jackpot* jackpot) {
 
 void Snake::restart() {
 
-	for (auto& part : snake_) {
+	for (int i = 0; i < totalParts_; i++) {
 		
-		grid_->clearCell(part.currentPositionInGrid_.Y, part.currentPositionInGrid_.X);
+		grid_->clearCell(snake_[i].currentPositionInGrid_.Y, snake_[i].currentPositionInGrid_.X);
 	}
 	
 	// the body parts don't move once the snake eats itself
@@ -49,7 +48,8 @@ void Snake::restart() {
 	grid_->clearCell(snake_[0].previousPositionInGrid_.Y, snake_[0].previousPositionInGrid_.X);
 
 	snake_.clear();
-	//snake_.reserve(SNAKE_RESERVE_SIZE);
+	
+	totalParts_ = 0;
 
 	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
 	createNewPart(SnakePart::BODY, Evolve::Position2D { 11, 10 }, SnakeDirection::RIGHT);
@@ -65,7 +65,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 	pointHolder = 0;
 	bool changedPosition = false;
 
-	for (int i = 0; i < snake_.size(); i++) {
+	for (int i = 0; i < totalParts_; i++) {
 
 		auto& current = snake_[i];
 
@@ -198,9 +198,9 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 				grid_->clearCell(current.previousPositionInGrid_.Y, current.previousPositionInGrid_.X);
 
-				if (snake_.size() - 1 > i) { // have to add new part if true
+				if (totalParts_ - 1 > i) { // have to add new part if true
 
-					auto& newTail = snake_[(size_t) i + 1];
+					auto& newTail = snake_[i + 1];
 
 					if (current.previousPositionInGrid_.isEqualTo(newTail.currentPositionInGrid_)) {
 
@@ -250,13 +250,15 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 				
 				bool ateSelf = false;
 
+				Evolve::Position2D newHeadPosition { current.currentPositionInGrid_.X, current.currentPositionInGrid_.Y };
+
 				// ate itself
 				if (grid_->isSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {
 					ateSelf = true;
 				}
 				
 				// ate fruit
-				else if (grid_->isFruitCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {
+				else if (grid_->isFoodCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {					
 
 					createNewPart(
 						SnakePart::NONE,
@@ -280,13 +282,12 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 					jackpotConsumed_ = true;
 				}
 
-				// it is possible that the vector of body parts was reallocated
-				/*current = snake_[i];*/
-
-				grid_->addSnakeCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X);
+				grid_->addSnakeCell(newHeadPosition.Y, newHeadPosition.X);
 
 				if (ateSelf) {
 					pointHolder = -1;
+
+					printf("\n\nSnake Size: %d\n\n", totalParts_);
 				}
 			}
 
@@ -378,7 +379,7 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 		BODY_COLOR.Alpha = currentBodyAlpha;
 	}	
 
-	for (int i = (int) snake_.size() - 1; i >= 0; i--) {
+	for (int i = (int) totalParts_ - 1; i >= 0; i--) {
 
 		auto& current = snake_[i];
 
@@ -476,10 +477,21 @@ void Snake::draw(Evolve::TextureRenderer& renderer) {
 
 void Snake::createNewPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction) {
 	
-	snake_.emplace_back(type, positionInGrid, direction, grid_->getNumRows(), grid_->getNumColumns());
+	snake_[totalParts_].type_ = type;
+	snake_[totalParts_].currentPositionInGrid_ = positionInGrid;
+	snake_[totalParts_].direction_ = direction;
+
+	snake_[totalParts_].currentPositionInWorld_.X = snake_[totalParts_].currentPositionInGrid_.X * Snake::BODY_SIZE;
+	snake_[totalParts_].currentPositionInWorld_.Y = snake_[totalParts_].currentPositionInGrid_.Y * Snake::BODY_SIZE;
+
+	SnakeBodyPart::SetNextPosition(snake_[totalParts_], grid_->getNumRows(), grid_->getNumColumns());
 
 	grid_->addSnakeCell(positionInGrid.Y, positionInGrid.X);
+
+	totalParts_++;
 }
+
+SnakeBodyPart::SnakeBodyPart() {}
 
 SnakeBodyPart::SnakeBodyPart(const SnakePart type, const Evolve::Position2D& positionInGrid, const SnakeDirection direction,
 	const size_t numRows, const size_t numColumns) {

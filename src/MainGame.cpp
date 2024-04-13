@@ -238,7 +238,9 @@ void MainGame::gameLoop() {
 
 		fps_.endFrame();
 
+#ifndef NDEBUG
 		printFps();
+#endif
 	}
 }
 
@@ -630,7 +632,6 @@ void MainGame::freeSnake() {
 	gui_.freeGui();
 	guiRenderer_.freeGuiRenderer();
 
-	//viniqueFont16_.deleteFont();
 	viniqueFont32_.deleteFont();
 	viniqueFont128_.deleteFont();
 

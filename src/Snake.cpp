@@ -202,7 +202,7 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 				if (totalParts_ - 1 > i) { // have to add new part if true
 
-					auto& newTail = snake_[i + 1];
+					auto& newTail = snake_[(size_t) i + 1];
 
 					if (current.previousPositionInGrid_.isEqualTo(newTail.currentPositionInGrid_)) {
 

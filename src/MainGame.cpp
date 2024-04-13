@@ -18,19 +18,36 @@ bool MainGame::initEngineComps() {
 
 	std::string assetsPath = "../Evolve-Engine/engine-assets";
 
+	bool fullscreen = true;
+
+#ifndef NDEBUG
+	fullscreen = false;
+#endif
+
 	return
-		window_.init("Snake", false, 1720, 960, CLEAR_COLOR) &&
+		window_.init("Snake", fullscreen, 1720, 960, CLEAR_COLOR) &&
 		camera_.init(Evolve::Size2D { window_.getWindowWidth(), window_.getWindowHeight() }) &&
 		fps_.init(MAX_FPS) &&
 		textureRenderer_.init(assetsPath) &&
 		viniqueFont32_.initFromFontFile("Vinque 32", "resources/fonts/vinque.rg-regular.otf", 32) &&
 		viniqueFont128_.initFromFontFile("Vinque 128", "resources/fonts/vinque.rg-regular.otf", 128) &&		
 		gui_.init() &&
-		guiRenderer_.init(assetsPath);
+		guiRenderer_.init(assetsPath) && 
+		audioPlayer_.init();
 }
 
 bool MainGame::initGame() {
 	windowSize_.set(window_.getWindowWidth(), window_.getWindowHeight());
+
+	audio_jackpotSpawn = audioPlayer_.addSoundEffect("resources/audios/sound_effects/jackpot_spawn.wav");
+	audio_jackpotLost = audioPlayer_.addSoundEffect("resources/audios/sound_effects/jackpot_lost.wav");
+	audio_jackpotConsume = audioPlayer_.addSoundEffect("resources/audios/sound_effects/jackpot_consumption.wav");
+
+	audio_foodConsumption = audioPlayer_.addSoundEffect("resources/audios/sound_effects/food_consumption.mp3");
+
+	audio_levelUp = audioPlayer_.addSoundEffect("resources/audios/sound_effects/level_up.wav");
+
+	audio_gameOver = audioPlayer_.addSoundEffect("resources/audios/sound_effects/game_over.wav");
 
 	grid_.init(windowSize_);
 	
@@ -273,7 +290,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static const int POINT_FRUIT = 10;
 	static const int POINT_JACKPOT = 50;
 
-	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 6;
+	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 10;
 
 	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 100;
 	
@@ -302,6 +319,8 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	if (snake_.move(deltaTime, level_, points)) {
 		
 		if (points == -1 || points == -2) {
+			audioPlayer_.playSoundEffect(audio_gameOver, 0);
+			
 			gameState_ = GameState::GAME_OVER;
 			gameOverUpdateNeeded_ = true;
 
@@ -319,6 +338,8 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 			if (food_.isConsumed()) {
 
+				audioPlayer_.playSoundEffect(audio_foodConsumption, 0);
+
 				score_ += POINT_FRUIT;
 				currentLevelScore_ += POINT_FRUIT;
 
@@ -326,6 +347,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 				fruitsConsumed_++;
 
 				if (fruitsConsumed_ % NUM_FRUIT_FOR_JACKPOT_SPAWN == 0) {
+
+					audioPlayer_.playSoundEffect(audio_jackpotSpawn, 0);
+
 					jackpot_.reset();
 					jackpot_.startJackpot(level_);
 					jackpotVisible_ = true;
@@ -333,6 +357,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 			}
 
 			if (jackpot_.isConsumed()) {
+
+				audioPlayer_.playSoundEffect(audio_jackpotConsume, 0);
+
 				score_ += POINT_JACKPOT;
 				currentLevelScore_ += POINT_JACKPOT;
 
@@ -341,6 +368,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 				jackpotVisible_ = false;
 			}
 			else if (jackpot_.isLost()) {
+
+				audioPlayer_.playSoundEffect(audio_jackpotLost, 0);
+
 				jackpotVisible_ = false;
 
 				jackpot_.reset();
@@ -348,6 +378,9 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 
 			// level up
 			if (currentLevelScore_ >= scoreToLevelUp_) {
+
+				audioPlayer_.playSoundEffect(audio_levelUp, 0);
+
 				level_++;
 				currentLevelScore_ = 0;
 				scoreToLevelUp_ += ADD_LEVEL_UP_SCORE_PER_LEVEL;

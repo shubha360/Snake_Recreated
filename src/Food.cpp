@@ -98,12 +98,12 @@ void Food::reset() {
 	int newY = getRandomY_(randomEngine_);
 
 	while (true) {
-		newX = getRandomX_(randomEngine_);
-		newY = getRandomY_(randomEngine_);
-
 		if (grid_->isEmptyCell(newY, newX)) {
 			break;
 		}
+
+		newX = getRandomX_(randomEngine_);
+		newY = getRandomY_(randomEngine_);		
 	}
 
 	positionInGrid_.X = newX;

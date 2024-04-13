@@ -70,6 +70,7 @@ public:
 	// don't have to check for anything if the snake didn't change it's position in grid
 	// pointHolder gets the point for rotations and loops,
 	// pointHolder is -1 on death
+	// pointHolder is -2 on maximum size reached
 	bool move(float deltaTime, int level, int& pointHolder);
 
 	void changeDirection(const SnakeDirection newDirection);

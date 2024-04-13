@@ -10,6 +10,7 @@
 #include <Evolve/Fps.h>
 #include <Evolve/Gui.h>
 #include <Evolve/GuiRenderer.h>
+#include <Evolve/AudioPlayer.h>
 
 #include "Snake.h"
 #include "Food.h"
@@ -43,6 +44,7 @@ private:
 	Evolve::GuiRenderer guiRenderer_;
 	Evolve::Font viniqueFont32_;
 	Evolve::Font viniqueFont128_;
+	Evolve::AudioPlayer audioPlayer_;
 
 	// gui font ids
 	size_t guiFont_vinique32_ = -1;
@@ -76,6 +78,15 @@ private:
 	bool gameOverUpdateNeeded_ = false;
 
 	void updateGameOverText(float deltaTime);
+
+	size_t audio_jackpotSpawn = -1;
+	size_t audio_jackpotLost = -1;
+	size_t audio_jackpotConsume = -1;
+
+	size_t audio_foodConsumption = -1;
+	size_t audio_levelUp = -1;
+
+	size_t audio_gameOver = -1;
 
 	Grid grid_;
 	Snake snake_;

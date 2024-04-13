@@ -19,6 +19,8 @@ public:
 	inline void consumed() { consumed_ = true; }
 	inline bool isConsumed() const { return consumed_; }
 
+	inline Evolve::Position2D& getPositionInGrid() { return positionInGrid_; }
+
 protected:
 	Grid* grid_ = nullptr;
 

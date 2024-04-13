@@ -48,7 +48,8 @@ void Snake::restart() {
 	grid_->clearCell(snake_[0].previousPositionInGrid_.Y, snake_[0].previousPositionInGrid_.X);
 
 	snake_.clear();
-	
+	snake_.resize(256);
+
 	totalParts_ = 0;
 
 	createNewPart(SnakePart::HEAD, Evolve::Position2D { 12, 10 }, SnakeDirection::RIGHT);
@@ -60,6 +61,7 @@ void Snake::restart() {
 // don't have to check for anything if the snake didn't change it's position in grid
 // pointHolder gets the point for rotations and loops,
 // pointHolder is -1 on death
+// pointHolder is -2 on maximum size reached
 bool Snake::move(float deltaTime, int level, int& pointHolder) {
 
 	pointHolder = 0;
@@ -258,7 +260,8 @@ bool Snake::move(float deltaTime, int level, int& pointHolder) {
 				}
 				
 				// ate fruit
-				else if (grid_->isFoodCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X)) {					
+				else if (grid_->isFoodCell(current.currentPositionInGrid_.Y, current.currentPositionInGrid_.X) || 
+					current.currentPositionInGrid_.isEqualTo(food_->getPositionInGrid())) {
 
 					createNewPart(
 						SnakePart::NONE,

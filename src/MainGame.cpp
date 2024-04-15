@@ -292,7 +292,7 @@ void MainGame::updateSnake(float deltaTime, bool& inputProcessed) {
 	static const int POINT_FRUIT = 10;
 	static const int POINT_JACKPOT = 50;
 
-	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 10;
+	static const int NUM_FRUIT_FOR_JACKPOT_SPAWN = 6;
 
 	static const int ADD_LEVEL_UP_SCORE_PER_LEVEL = 100;
 	

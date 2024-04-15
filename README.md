@@ -6,9 +6,9 @@ This project is licensed under the **[MIT License](LICENSE)**. You are welcome t
 
 ## Notable Features
 
-- The snake can go through one edge of the screen and come out of the opposite edge of the screen.
-- A jackpot is spawned after consuming a certain amount of food. The jackpot stays for a certain amount of time before disappearing.
-
+- The snake exhibits wraparound behavior, allowing it to traverse seamlessly from one edge of the screen to the opposite edge.
+- After consuming a specific quantity of food, a jackpot spawns, remaining present for a designated duration before vanishing.
+  
 ## Preview
 
 <img src="preview.gif" width="862" height="479" />
